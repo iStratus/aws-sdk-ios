@@ -1006,6 +1006,9 @@ static NSString *_defaultService;
 
 - (void)setSharedPassword:(NSString *)password forAccount:(NSString *)account completion:(void (^)(NSError *error))completion
 {
+#if TARGET_OS_MACCATALYST
+    @throw [NSException exceptionWithName:@"AWSMacCatalystUnavailable" reason:@"This method is not available on Mac Catalyst" userInfo:nil];
+#else
     NSString *domain = self.server.host;
     if (domain.length > 0) {
         SecAddSharedWebCredential((__bridge CFStringRef)domain, (__bridge CFStringRef)account, (__bridge CFStringRef)password, ^(CFErrorRef error) {
@@ -1019,6 +1022,7 @@ static NSString *_defaultService;
             completion(error);
         }
     }
+#endif
 }
 
 - (void)removeSharedPasswordForAccount:(NSString *)account completion:(void (^)(NSError *error))completion
@@ -1033,6 +1037,9 @@ static NSString *_defaultService;
 
 + (void)requestSharedWebCredentialForDomain:(NSString *)domain account:(NSString *)account completion:(void (^)(NSArray UIC_CREDENTIAL_TYPE *credentials, NSError *error))completion
 {
+#if TARGET_OS_MACCATALYST
+    @throw [NSException exceptionWithName:@"AWSMacCatalystUnavailable" reason:@"This method is not available on Mac Catalyst" userInfo:nil];
+#else
     SecRequestSharedWebCredential((__bridge CFStringRef)domain, (__bridge CFStringRef)account, ^(CFArrayRef credentials, CFErrorRef error) {
         if (error) {
             NSError *e = (__bridge NSError *)error;
@@ -1063,11 +1070,16 @@ static NSString *_defaultService;
             completion(sharedCredentials.copy, (__bridge NSError *)error);
         }
     });
+#endif
 }
 
 + (NSString *)generatePassword
 {
+#if TARGET_OS_MACCATALYST
+    @throw [NSException exceptionWithName:@"AWSMacCatalystUnavailable" reason:@"This method is not available on Mac Catalyst" userInfo:nil];
+#else
     return CFBridgingRelease(SecCreateSharedWebCredentialPassword());
+#endif
 }
 
 #endif
