@@ -117,7 +117,7 @@ __OSX_AVAILABLE_STARTING(__MAC_10_10, __IPHONE_8_0);
 
 @property (nonatomic) BOOL synchronizable;
 
-@property (nonatomic, nullable) NSString *authenticationPrompt
+@property (nonatomic, copy, nullable) NSString *authenticationPrompt
 __OSX_AVAILABLE_STARTING(__MAC_NA, __IPHONE_8_0);
 
 @property (nonatomic, readonly, nullable) NSArray UIC_KEY_TYPE *allKeys;

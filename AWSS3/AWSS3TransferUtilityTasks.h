@@ -303,7 +303,7 @@ typedef void (^AWSS3TransferUtilityMultiPartProgressBlock) (AWSS3TransferUtility
 /**
  The upload request header for `Content-MD5`.
  */
-@property (nonatomic, nullable) NSString *contentMD5;
+@property (nonatomic, copy, nullable) NSString *contentMD5;
 
 @end
 

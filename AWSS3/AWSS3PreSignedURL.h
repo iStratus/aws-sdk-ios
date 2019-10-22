@@ -237,12 +237,12 @@ typedef NS_ENUM(NSInteger, AWSS3PresignedURLErrorType) {
 /**
  Expected content-type of the request. If set, the content-type will be included in the signature and future requests must include the same content-type header value to access the presigned URL. This parameter is ignored unless AWSHTTPMethod is equal to AWSHTTPMethodPUT. Default is nil.
  */
-@property (nonatomic) NSString * _Nullable contentType;
+@property (nonatomic, copy) NSString * _Nullable contentType;
 
 /**
  Expected content-md5 header of the request. If set, this header value will be included when calculating the signature and future requests must include the same content-md5 header value to access the presigned URL. This parameter is ignored unless HTTPMethod is equal to AWSHTTPMethodPUT. Default is nil.
  */
-@property (nonatomic) NSString * _Nullable contentMD5;
+@property (nonatomic, copy) NSString * _Nullable contentMD5;
 
 /**
  This NSDictionary can contains additional request headers to be included in the pre-signed URL. Default is emtpy.
