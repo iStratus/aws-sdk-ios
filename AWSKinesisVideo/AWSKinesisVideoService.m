@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 #import "AWSKinesisVideoResources.h"
 
 static NSString *const AWSInfoKinesisVideo = @"KinesisVideo";
-NSString *const AWSKinesisVideoSDKVersion = @"2.11.1";
+NSString *const AWSKinesisVideoSDKVersion = @"2.28.5";
 
 
 @interface AWSKinesisVideoResponseSerializer : AWSJSONResponseSerializer
@@ -39,12 +39,15 @@ NSString *const AWSKinesisVideoSDKVersion = @"2.11.1";
 static NSDictionary *errorCodeDictionary = nil;
 + (void)initialize {
     errorCodeDictionary = @{
+                            @"AccessDeniedException" : @(AWSKinesisVideoErrorAccessDenied),
+                            @"AccountChannelLimitExceededException" : @(AWSKinesisVideoErrorAccountChannelLimitExceeded),
                             @"AccountStreamLimitExceededException" : @(AWSKinesisVideoErrorAccountStreamLimitExceeded),
                             @"ClientLimitExceededException" : @(AWSKinesisVideoErrorClientLimitExceeded),
                             @"DeviceStreamLimitExceededException" : @(AWSKinesisVideoErrorDeviceStreamLimitExceeded),
                             @"InvalidArgumentException" : @(AWSKinesisVideoErrorInvalidArgument),
                             @"InvalidDeviceException" : @(AWSKinesisVideoErrorInvalidDevice),
                             @"InvalidResourceFormatException" : @(AWSKinesisVideoErrorInvalidResourceFormat),
+                            @"NoDataRetentionException" : @(AWSKinesisVideoErrorNoDataRetention),
                             @"NotAuthorizedException" : @(AWSKinesisVideoErrorNotAuthorized),
                             @"ResourceInUseException" : @(AWSKinesisVideoErrorResourceInUse),
                             @"ResourceNotFoundException" : @(AWSKinesisVideoErrorResourceNotFound),
@@ -286,6 +289,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 #pragma mark - Service method
 
+- (AWSTask<AWSKinesisVideoCreateSignalingChannelOutput *> *)createSignalingChannel:(AWSKinesisVideoCreateSignalingChannelInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/createSignalingChannel"
+                  targetPrefix:@""
+                 operationName:@"CreateSignalingChannel"
+                   outputClass:[AWSKinesisVideoCreateSignalingChannelOutput class]];
+}
+
+- (void)createSignalingChannel:(AWSKinesisVideoCreateSignalingChannelInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoCreateSignalingChannelOutput *response, NSError *error))completionHandler {
+    [[self createSignalingChannel:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoCreateSignalingChannelOutput *> * _Nonnull task) {
+        AWSKinesisVideoCreateSignalingChannelOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSKinesisVideoCreateStreamOutput *> *)createStream:(AWSKinesisVideoCreateStreamInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -309,6 +335,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSKinesisVideoDeleteSignalingChannelOutput *> *)deleteSignalingChannel:(AWSKinesisVideoDeleteSignalingChannelInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/deleteSignalingChannel"
+                  targetPrefix:@""
+                 operationName:@"DeleteSignalingChannel"
+                   outputClass:[AWSKinesisVideoDeleteSignalingChannelOutput class]];
+}
+
+- (void)deleteSignalingChannel:(AWSKinesisVideoDeleteSignalingChannelInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoDeleteSignalingChannelOutput *response, NSError *error))completionHandler {
+    [[self deleteSignalingChannel:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoDeleteSignalingChannelOutput *> * _Nonnull task) {
+        AWSKinesisVideoDeleteSignalingChannelOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSKinesisVideoDeleteStreamOutput *> *)deleteStream:(AWSKinesisVideoDeleteStreamInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -322,6 +371,75 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSKinesisVideoDeleteStreamOutput *response, NSError *error))completionHandler {
     [[self deleteStream:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoDeleteStreamOutput *> * _Nonnull task) {
         AWSKinesisVideoDeleteStreamOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoDescribeImageGenerationConfigurationOutput *> *)describeImageGenerationConfiguration:(AWSKinesisVideoDescribeImageGenerationConfigurationInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/describeImageGenerationConfiguration"
+                  targetPrefix:@""
+                 operationName:@"DescribeImageGenerationConfiguration"
+                   outputClass:[AWSKinesisVideoDescribeImageGenerationConfigurationOutput class]];
+}
+
+- (void)describeImageGenerationConfiguration:(AWSKinesisVideoDescribeImageGenerationConfigurationInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoDescribeImageGenerationConfigurationOutput *response, NSError *error))completionHandler {
+    [[self describeImageGenerationConfiguration:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoDescribeImageGenerationConfigurationOutput *> * _Nonnull task) {
+        AWSKinesisVideoDescribeImageGenerationConfigurationOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoDescribeNotificationConfigurationOutput *> *)describeNotificationConfiguration:(AWSKinesisVideoDescribeNotificationConfigurationInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/describeNotificationConfiguration"
+                  targetPrefix:@""
+                 operationName:@"DescribeNotificationConfiguration"
+                   outputClass:[AWSKinesisVideoDescribeNotificationConfigurationOutput class]];
+}
+
+- (void)describeNotificationConfiguration:(AWSKinesisVideoDescribeNotificationConfigurationInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoDescribeNotificationConfigurationOutput *response, NSError *error))completionHandler {
+    [[self describeNotificationConfiguration:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoDescribeNotificationConfigurationOutput *> * _Nonnull task) {
+        AWSKinesisVideoDescribeNotificationConfigurationOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoDescribeSignalingChannelOutput *> *)describeSignalingChannel:(AWSKinesisVideoDescribeSignalingChannelInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/describeSignalingChannel"
+                  targetPrefix:@""
+                 operationName:@"DescribeSignalingChannel"
+                   outputClass:[AWSKinesisVideoDescribeSignalingChannelOutput class]];
+}
+
+- (void)describeSignalingChannel:(AWSKinesisVideoDescribeSignalingChannelInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoDescribeSignalingChannelOutput *response, NSError *error))completionHandler {
+    [[self describeSignalingChannel:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoDescribeSignalingChannelOutput *> * _Nonnull task) {
+        AWSKinesisVideoDescribeSignalingChannelOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -378,6 +496,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSKinesisVideoGetSignalingChannelEndpointOutput *> *)getSignalingChannelEndpoint:(AWSKinesisVideoGetSignalingChannelEndpointInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/getSignalingChannelEndpoint"
+                  targetPrefix:@""
+                 operationName:@"GetSignalingChannelEndpoint"
+                   outputClass:[AWSKinesisVideoGetSignalingChannelEndpointOutput class]];
+}
+
+- (void)getSignalingChannelEndpoint:(AWSKinesisVideoGetSignalingChannelEndpointInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoGetSignalingChannelEndpointOutput *response, NSError *error))completionHandler {
+    [[self getSignalingChannelEndpoint:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoGetSignalingChannelEndpointOutput *> * _Nonnull task) {
+        AWSKinesisVideoGetSignalingChannelEndpointOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoListSignalingChannelsOutput *> *)listSignalingChannels:(AWSKinesisVideoListSignalingChannelsInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/listSignalingChannels"
+                  targetPrefix:@""
+                 operationName:@"ListSignalingChannels"
+                   outputClass:[AWSKinesisVideoListSignalingChannelsOutput class]];
+}
+
+- (void)listSignalingChannels:(AWSKinesisVideoListSignalingChannelsInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoListSignalingChannelsOutput *response, NSError *error))completionHandler {
+    [[self listSignalingChannels:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoListSignalingChannelsOutput *> * _Nonnull task) {
+        AWSKinesisVideoListSignalingChannelsOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSKinesisVideoListStreamsOutput *> *)listStreams:(AWSKinesisVideoListStreamsInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -391,6 +555,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSKinesisVideoListStreamsOutput *response, NSError *error))completionHandler {
     [[self listStreams:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoListStreamsOutput *> * _Nonnull task) {
         AWSKinesisVideoListStreamsOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoListTagsForResourceOutput *> *)listTagsForResource:(AWSKinesisVideoListTagsForResourceInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/ListTagsForResource"
+                  targetPrefix:@""
+                 operationName:@"ListTagsForResource"
+                   outputClass:[AWSKinesisVideoListTagsForResourceOutput class]];
+}
+
+- (void)listTagsForResource:(AWSKinesisVideoListTagsForResourceInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoListTagsForResourceOutput *response, NSError *error))completionHandler {
+    [[self listTagsForResource:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoListTagsForResourceOutput *> * _Nonnull task) {
+        AWSKinesisVideoListTagsForResourceOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -424,6 +611,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSKinesisVideoTagResourceOutput *> *)tagResource:(AWSKinesisVideoTagResourceInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/TagResource"
+                  targetPrefix:@""
+                 operationName:@"TagResource"
+                   outputClass:[AWSKinesisVideoTagResourceOutput class]];
+}
+
+- (void)tagResource:(AWSKinesisVideoTagResourceInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoTagResourceOutput *response, NSError *error))completionHandler {
+    [[self tagResource:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoTagResourceOutput *> * _Nonnull task) {
+        AWSKinesisVideoTagResourceOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSKinesisVideoTagStreamOutput *> *)tagStream:(AWSKinesisVideoTagStreamInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -437,6 +647,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSKinesisVideoTagStreamOutput *response, NSError *error))completionHandler {
     [[self tagStream:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoTagStreamOutput *> * _Nonnull task) {
         AWSKinesisVideoTagStreamOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoUntagResourceOutput *> *)untagResource:(AWSKinesisVideoUntagResourceInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/UntagResource"
+                  targetPrefix:@""
+                 operationName:@"UntagResource"
+                   outputClass:[AWSKinesisVideoUntagResourceOutput class]];
+}
+
+- (void)untagResource:(AWSKinesisVideoUntagResourceInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoUntagResourceOutput *response, NSError *error))completionHandler {
+    [[self untagResource:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoUntagResourceOutput *> * _Nonnull task) {
+        AWSKinesisVideoUntagResourceOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -483,6 +716,75 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSKinesisVideoUpdateDataRetentionOutput *response, NSError *error))completionHandler {
     [[self updateDataRetention:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoUpdateDataRetentionOutput *> * _Nonnull task) {
         AWSKinesisVideoUpdateDataRetentionOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoUpdateImageGenerationConfigurationOutput *> *)updateImageGenerationConfiguration:(AWSKinesisVideoUpdateImageGenerationConfigurationInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/updateImageGenerationConfiguration"
+                  targetPrefix:@""
+                 operationName:@"UpdateImageGenerationConfiguration"
+                   outputClass:[AWSKinesisVideoUpdateImageGenerationConfigurationOutput class]];
+}
+
+- (void)updateImageGenerationConfiguration:(AWSKinesisVideoUpdateImageGenerationConfigurationInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoUpdateImageGenerationConfigurationOutput *response, NSError *error))completionHandler {
+    [[self updateImageGenerationConfiguration:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoUpdateImageGenerationConfigurationOutput *> * _Nonnull task) {
+        AWSKinesisVideoUpdateImageGenerationConfigurationOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoUpdateNotificationConfigurationOutput *> *)updateNotificationConfiguration:(AWSKinesisVideoUpdateNotificationConfigurationInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/updateNotificationConfiguration"
+                  targetPrefix:@""
+                 operationName:@"UpdateNotificationConfiguration"
+                   outputClass:[AWSKinesisVideoUpdateNotificationConfigurationOutput class]];
+}
+
+- (void)updateNotificationConfiguration:(AWSKinesisVideoUpdateNotificationConfigurationInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoUpdateNotificationConfigurationOutput *response, NSError *error))completionHandler {
+    [[self updateNotificationConfiguration:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoUpdateNotificationConfigurationOutput *> * _Nonnull task) {
+        AWSKinesisVideoUpdateNotificationConfigurationOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSKinesisVideoUpdateSignalingChannelOutput *> *)updateSignalingChannel:(AWSKinesisVideoUpdateSignalingChannelInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@"/updateSignalingChannel"
+                  targetPrefix:@""
+                 operationName:@"UpdateSignalingChannel"
+                   outputClass:[AWSKinesisVideoUpdateSignalingChannelOutput class]];
+}
+
+- (void)updateSignalingChannel:(AWSKinesisVideoUpdateSignalingChannelInput *)request
+     completionHandler:(void (^)(AWSKinesisVideoUpdateSignalingChannelOutput *response, NSError *error))completionHandler {
+    [[self updateSignalingChannel:request] continueWithBlock:^id _Nullable(AWSTask<AWSKinesisVideoUpdateSignalingChannelOutput *> * _Nonnull task) {
+        AWSKinesisVideoUpdateSignalingChannelOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {

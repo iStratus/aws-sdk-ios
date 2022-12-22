@@ -19,12 +19,10 @@
 #import "AWSPinpoint.h"
 #import "AWSUICKeyChainStore.h"
 
-static NSString *const AWSPinpointContextKeychainService = @"com.amazonaws.AWSPinpointContext";
 static NSString *const AWSPinpointContextKeychainUniqueIdKey = @"com.amazonaws.AWSPinpointContextKeychainUniqueIdKey";
 static NSString *const AWSMobileAnalyticsRoot = @"com.amazonaws.MobileAnalytics";
 
 @interface AWSPinpointContext()
-@property (nonatomic, strong) AWSUICKeyChainStore *keychain;
 @property (nonatomic, strong) NSString* uniqueId;
 - (NSString *) retrieveUniqueId;
 @end
@@ -36,7 +34,7 @@ static NSString *const AWSMobileAnalyticsRoot = @"com.amazonaws.MobileAnalytics"
 @end
 
 @interface AWSPinpointConfiguration()
-@property (nonnull, strong) NSUserDefaults *userDefaults;
+@property (nonatomic, strong) NSUserDefaults *userDefaults;
 @end
 
 @implementation AWSPinpointContextTests

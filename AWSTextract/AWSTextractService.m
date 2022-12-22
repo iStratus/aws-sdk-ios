@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 //
 
 #import "AWSTextractService.h"
-#import <AWSCore/AWSNetworking.h>
 #import <AWSCore/AWSCategory.h>
 #import <AWSCore/AWSNetworking.h>
 #import <AWSCore/AWSSignature.h>
@@ -26,7 +25,7 @@
 #import "AWSTextractResources.h"
 
 static NSString *const AWSInfoTextract = @"Textract";
-NSString *const AWSTextractSDKVersion = @"2.11.1";
+NSString *const AWSTextractSDKVersion = @"2.28.5";
 
 
 @interface AWSTextractResponseSerializer : AWSJSONResponseSerializer
@@ -43,9 +42,11 @@ static NSDictionary *errorCodeDictionary = nil;
                             @"AccessDeniedException" : @(AWSTextractErrorAccessDenied),
                             @"BadDocumentException" : @(AWSTextractErrorBadDocument),
                             @"DocumentTooLargeException" : @(AWSTextractErrorDocumentTooLarge),
+                            @"HumanLoopQuotaExceededException" : @(AWSTextractErrorHumanLoopQuotaExceeded),
                             @"IdempotentParameterMismatchException" : @(AWSTextractErrorIdempotentParameterMismatch),
                             @"InternalServerError" : @(AWSTextractErrorInternalServer),
                             @"InvalidJobIdException" : @(AWSTextractErrorInvalidJobId),
+                            @"InvalidKMSKeyException" : @(AWSTextractErrorInvalidKMSKey),
                             @"InvalidParameterException" : @(AWSTextractErrorInvalidParameter),
                             @"InvalidS3ObjectException" : @(AWSTextractErrorInvalidS3Object),
                             @"LimitExceededException" : @(AWSTextractErrorLimitExceeded),
@@ -309,6 +310,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSTextractAnalyzeExpenseResponse *> *)analyzeExpense:(AWSTextractAnalyzeExpenseRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"Textract"
+                 operationName:@"AnalyzeExpense"
+                   outputClass:[AWSTextractAnalyzeExpenseResponse class]];
+}
+
+- (void)analyzeExpense:(AWSTextractAnalyzeExpenseRequest *)request
+     completionHandler:(void (^)(AWSTextractAnalyzeExpenseResponse *response, NSError *error))completionHandler {
+    [[self analyzeExpense:request] continueWithBlock:^id _Nullable(AWSTask<AWSTextractAnalyzeExpenseResponse *> * _Nonnull task) {
+        AWSTextractAnalyzeExpenseResponse *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSTextractAnalyzeIDResponse *> *)analyzeID:(AWSTextractAnalyzeIDRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"Textract"
+                 operationName:@"AnalyzeID"
+                   outputClass:[AWSTextractAnalyzeIDResponse class]];
+}
+
+- (void)analyzeID:(AWSTextractAnalyzeIDRequest *)request
+     completionHandler:(void (^)(AWSTextractAnalyzeIDResponse *response, NSError *error))completionHandler {
+    [[self analyzeID:request] continueWithBlock:^id _Nullable(AWSTask<AWSTextractAnalyzeIDResponse *> * _Nonnull task) {
+        AWSTextractAnalyzeIDResponse *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSTextractDetectDocumentTextResponse *> *)detectDocumentText:(AWSTextractDetectDocumentTextRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -378,6 +425,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSTextractGetExpenseAnalysisResponse *> *)getExpenseAnalysis:(AWSTextractGetExpenseAnalysisRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"Textract"
+                 operationName:@"GetExpenseAnalysis"
+                   outputClass:[AWSTextractGetExpenseAnalysisResponse class]];
+}
+
+- (void)getExpenseAnalysis:(AWSTextractGetExpenseAnalysisRequest *)request
+     completionHandler:(void (^)(AWSTextractGetExpenseAnalysisResponse *response, NSError *error))completionHandler {
+    [[self getExpenseAnalysis:request] continueWithBlock:^id _Nullable(AWSTask<AWSTextractGetExpenseAnalysisResponse *> * _Nonnull task) {
+        AWSTextractGetExpenseAnalysisResponse *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSTextractStartDocumentAnalysisResponse *> *)startDocumentAnalysis:(AWSTextractStartDocumentAnalysisRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -414,6 +484,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSTextractStartDocumentTextDetectionResponse *response, NSError *error))completionHandler {
     [[self startDocumentTextDetection:request] continueWithBlock:^id _Nullable(AWSTask<AWSTextractStartDocumentTextDetectionResponse *> * _Nonnull task) {
         AWSTextractStartDocumentTextDetectionResponse *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSTextractStartExpenseAnalysisResponse *> *)startExpenseAnalysis:(AWSTextractStartExpenseAnalysisRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"Textract"
+                 operationName:@"StartExpenseAnalysis"
+                   outputClass:[AWSTextractStartExpenseAnalysisResponse class]];
+}
+
+- (void)startExpenseAnalysis:(AWSTextractStartExpenseAnalysisRequest *)request
+     completionHandler:(void (^)(AWSTextractStartExpenseAnalysisResponse *response, NSError *error))completionHandler {
+    [[self startExpenseAnalysis:request] continueWithBlock:^id _Nullable(AWSTask<AWSTextractStartExpenseAnalysisResponse *> * _Nonnull task) {
+        AWSTextractStartExpenseAnalysisResponse *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {

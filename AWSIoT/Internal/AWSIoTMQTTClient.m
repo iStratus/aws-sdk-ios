@@ -17,9 +17,12 @@
 
 #import "AWSIoTMQTTClient.h"
 #import "AWSMQTTSession.h"
-#import "AWSSRWebSocket.h"
+#import <AWSIoT/AWSSRWebSocket.h>
 #import "AWSIoTWebSocketOutputStream.h"
 #import "AWSIoTKeychain.h"
+#import "AWSIoTMessage.h"
+#import "AWSIoTMessage+AWSMQTTMessage.h"
+#import "AWSMQTTMessage.h"
 
 @implementation AWSIoTMQTTTopicModel
 @end
@@ -58,21 +61,13 @@
 
 @property UInt16 keepAliveInterval;
 
-@property(nonatomic, strong) NSMutableDictionary<NSNumber *, AWSIoTMQTTAckBlock> *ackCallbackDictionary;
+@property(atomic, strong) NSMutableDictionary<NSNumber *, AWSIoTMQTTAckBlock> *ackCallbackDictionary;
 
 @property NSString *lastWillAndTestamentTopic;
 @property NSData *lastWillAndTestamentMessage;
 @property UInt8 lastWillAndTestamentQoS;
 @property BOOL lastWillAndTestamentRetainFlag;
 
-//
-// Two bound pairs of streams are used to connect the MQTT
-// client to the WebSocket: one for the encoder, and one for
-// the decoder.
-//
-@property(nonatomic, assign) CFWriteStreamRef encoderWriteStream;
-@property(nonatomic, assign) CFReadStreamRef  decoderReadStream;
-@property(nonatomic, assign) CFWriteStreamRef decoderWriteStream;
 @property(nonatomic, strong) NSOutputStream *encoderStream;      // MQTT encoder writes to this one
 @property(nonatomic, strong) NSInputStream  *decoderStream;      // MQTT decoder reads from this one
 @property(nonatomic, strong) NSOutputStream *toDecoderStream;    // We write to this one
@@ -85,13 +80,14 @@
 @property (atomic, assign) BOOL runLoopShouldContinue;
 
 @property (strong,atomic) dispatch_semaphore_t timerSemaphore;
+@property (strong,atomic) dispatch_queue_t timerQueue;
 
 @end
 
 @implementation AWSIoTMQTTClient
 
+#pragma mark - Initializers -
 
-#pragma mark Intialitalizers
 - (instancetype)init {
     if (self = [super init]) {
         _topicListeners = [NSMutableDictionary dictionary];
@@ -112,6 +108,7 @@
         _userDidIssueConnect = NO;
         _userDidIssueDisconnect = NO;
         _timerSemaphore = dispatch_semaphore_create(1);
+        _timerQueue = dispatch_queue_create("com.amazon.aws.iot.timer-queue", DISPATCH_QUEUE_SERIAL);
         _streamsThread = nil;
     }
     return self;
@@ -125,7 +122,8 @@
     return self;
 }
 
-#pragma mark signer methods
+#pragma mark - signer methods -
+
 - (NSData *)getDerivedKeyForSecretKey:(NSString *)secretKey
                             dateStamp:(NSString *)dateStamp
                            regionName:(NSString *)regionName
@@ -223,10 +221,22 @@
                              serviceName,
                              now];
 
-    return [self signWebSocketUrlForMethod:@"GET" scheme:@"wss://" hostName:hostName path:path  queryParams:queryParams accessKey:accessKey secretKey:secretKey regionName:regionName serviceName:serviceName payload:@"" today:today now:now sessionKey:sessionKey];
+    return [self signWebSocketUrlForMethod:@"GET"
+                                    scheme:@"wss://"
+                                  hostName:hostName
+                                      path:path
+                               queryParams:queryParams
+                                 accessKey:accessKey
+                                 secretKey:secretKey
+                                regionName:regionName
+                               serviceName:serviceName
+                                   payload:@""
+                                     today:today
+                                       now:now
+                                sessionKey:sessionKey];
 }
 
-#pragma mark connect lifecycle methods
+#pragma mark - connect lifecycle methods -
 
 - (BOOL)connectWithClientId:(NSString*)clientId
                      toHost:(NSString*)host
@@ -287,7 +297,7 @@
     if (self.session == nil ) {
         self.session= [[AWSMQTTSession alloc] initWithClientId:self.clientId
                                                userName:self.userMetaData
-                                               password:@""
+                                               password:self.password
                                               keepAlive:self.keepAliveInterval
                                            cleanSession:self.cleanSession
                                               willTopic:self.lastWillAndTestamentTopic
@@ -395,7 +405,7 @@
     self.keepAliveInterval = theKeepAliveInterval;
     self.connectStatusCallback = callback;
     
-    return [ self webSocketConnectWithClientId];
+    return [self webSocketConnectWithClientId];
 }
 
 - (BOOL)connectWithClientId:(NSString *)clientId
@@ -544,7 +554,7 @@
     if (self.session == nil ) {
         self.session = [[AWSMQTTSession alloc] initWithClientId:self.clientId
                                                        userName:self.userMetaData
-                                                       password:@""
+                                                       password:self.password
                                                       keepAlive:self.keepAliveInterval
                                                    cleanSession:self.cleanSession
                                                       willTopic:self.lastWillAndTestamentTopic
@@ -641,6 +651,17 @@
     }
 }
 
+- (void)cleanUpToDecoderStream {
+    @synchronized(self) {
+        if (self.toDecoderStream) {
+            self.toDecoderStream.delegate = nil;
+            [self.toDecoderStream close];
+            [self.toDecoderStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+            self.toDecoderStream = nil;
+        }
+    }
+}
+
 - (void)reconnectToSession {
     
     self.reconnectTimer = nil;
@@ -702,17 +723,10 @@
     //Set the timeout to 1800 seconds, which is 1.5x of the max keep-alive 1200 seconds.
     //The unit of measure for the dispatch_time function is nano seconds.
 
-    dispatch_semaphore_wait(_timerSemaphore, dispatch_time(DISPATCH_TIME_NOW, 1800 * NSEC_PER_SEC));
-    if (! self.reconnectTimer && self.mqttStatus != AWSIoTMQTTStatusConnected ) {
-        self.reconnectTimer = [NSTimer timerWithTimeInterval:self.currentReconnectTime
-                                                      target:self
-                                                    selector: @selector(reconnectToSession)
-                                                    userInfo:nil
-                                                     repeats:NO];
-        [[NSRunLoop currentRunLoop] addTimer:self.reconnectTimer forMode:NSRunLoopCommonModes];
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-    }
-    dispatch_semaphore_signal(_timerSemaphore);
+    dispatch_assert_queue_not(self.timerQueue);
+    dispatch_async(self.timerQueue, ^{
+        [self scheduleReconnection];
+    });
 }
 
 - (void)openStreams:(id)sender
@@ -754,9 +768,10 @@
             self.connectionAgeTimer = nil;
         }
         [self.session close];
-        
-        if ( self.webSocket) {
-            [self.toDecoderStream close];
+
+        [self cleanUpToDecoderStream];
+
+        if (self.webSocket) {
             [self.webSocket close];
             self.webSocket = nil;
         }
@@ -773,7 +788,7 @@
     AWSDDLogVerbose(@"ThreadID: [%@] Default run loop timer executed: RunLoopShouldContinue is [%d] and Cancelled is [%d]", [NSThread currentThread], self.runLoopShouldContinue, [[NSThread currentThread] isCancelled]);
 }
 
-#pragma mark publish methods
+#pragma mark - publish methods -
 
 - (void)publishString:(NSString*)str
               onTopic:(NSString*)topic
@@ -812,17 +827,21 @@
 - (void)publishData:(NSData *)data
                 qos:(UInt8)qos
             onTopic:(NSString *)topic {
-    [self publishData:data
-                  qos:qos
-              onTopic:topic
-          ackCallback:nil];
+    [self publishData:data qos:qos onTopic:topic ackCallback:nil];
 }
 
 - (void)publishData:(NSData*)data
                 qos:(UInt8)qos
             onTopic:(NSString*)topic
-        ackCallback:(AWSIoTMQTTAckBlock)ackCallback {
-    
+        ackCallback:(nullable AWSIoTMQTTAckBlock)ackCallback {
+    [self publishData:data qos:qos onTopic:topic retain:NO ackCallback:ackCallback];
+}
+
+- (void)publishData:(NSData*)data
+                qos:(AWSIoTMQTTQoS)qos
+            onTopic:(NSString*)topic
+             retain:(BOOL)retain
+        ackCallback:(nullable AWSIoTMQTTAckBlock)ackCallback {
     if (!_userDidIssueConnect) {
         [NSException raise:NSInternalInconsistencyException
                     format:@"Cannot call publish before connecting to the server"];
@@ -833,29 +852,36 @@
                     format:@"Cannot call publish after disconnecting from the server"];
     }
     
-    if (qos > 1) {
-        AWSDDLogError(@"invalid qos value: %u", qos);
+    if (qos < 0 || qos > 2) {
+        AWSDDLogError(@"invalid qos value: %ld", (long)qos);
         return;
     }
-    if (qos == 0 && ackCallback != nil) {
+    if (qos == AWSIoTMQTTQoSMessageDeliveryAttemptedAtMostOnce && ackCallback != nil) {
         [NSException raise:NSInvalidArgumentException
                     format:@"Cannot specify `ackCallback` block for QoS = 0."];
     }
 
     AWSDDLogVerbose(@"isReadyToPublish: %i",[self.session isReadyToPublish]);
-    if (qos == 0) {
-        [self.session publishData:data onTopic:topic];
-    }
-    else {
-        UInt16 messageId = [self.session publishDataAtLeastOnce:data onTopic:topic];
-        if (ackCallback) {
-            [self.ackCallbackDictionary setObject:ackCallback
-                                           forKey:[NSNumber numberWithInt:messageId]];
-        }
+    if (qos == AWSIoTMQTTQoSMessageDeliveryAttemptedAtMostOnce) {
+        [self.session publishDataAtMostOnce:data onTopic:topic retain:retain];
+    } else if (qos == AWSIoTMQTTQoSMessageDeliveryAttemptedAtLeastOnce) {
+        [self.session publishDataAtLeastOnce:data onTopic:topic retain:retain onMessageIdResolved:^(UInt16 msgId) {
+            if (ackCallback) {
+                [self.ackCallbackDictionary setObject:ackCallback
+                                               forKey:[NSNumber numberWithInt:msgId]];
+            }
+        }];
+    } else if (qos == AWSIoTMQTTQoSMessageDeliveryAttemptedExactlyOnce) {
+        [self.session publishDataExactlyOnce:data onTopic:topic retain:retain onMessageIdResolved:^(UInt16 msgId) {
+            if (ackCallback) {
+                [self.ackCallbackDictionary setObject:ackCallback
+                                               forKey:[NSNumber numberWithInt:msgId]];
+            }
+        }];
     }
 }
 
-#pragma mark subscribe methods
+#pragma mark - subscribe methods -
 
 - (void)subscribeToTopic:(NSString*)topic qos:(UInt8)qos messageCallback:(AWSIoTMQTTNewMessageBlock)callback {
     [self subscribeToTopic:topic
@@ -867,7 +893,7 @@
 
 - (void)subscribeToTopic:(NSString*)topic qos:(UInt8)qos
          messageCallback:(AWSIoTMQTTNewMessageBlock)callback
-             ackCallback:(AWSIoTMQTTAckBlock)ackCallBack {
+             ackCallback:(AWSIoTMQTTAckBlock)ackCallback {
     if (!_userDidIssueConnect) {
         [NSException raise:NSInternalInconsistencyException
                     format:@"Cannot call subscribe before connecting to the server"];
@@ -882,14 +908,8 @@
     topicModel.topic = topic;
     topicModel.qos = qos;
     topicModel.callback = callback;
-    [self.topicListeners setObject:topicModel forKey:topic];
-    
-    UInt16 messageId = [self.session subscribeToTopic:topicModel.topic atLevel:topicModel.qos];
-    AWSDDLogVerbose(@"Now subscribing w/ messageId: %d", messageId);
-    if (ackCallBack) {
-        [self.ackCallbackDictionary setObject:ackCallBack
-                                           forKey:[NSNumber numberWithInt:messageId]];
-    }
+
+    [self subscribeWithTopicModel:topicModel ackCallback:ackCallback];
 }
 
 - (void)subscribeToTopic:(NSString*)topic
@@ -919,14 +939,53 @@
     AWSIoTMQTTTopicModel *topicModel = [AWSIoTMQTTTopicModel new];
     topicModel.topic = topic;
     topicModel.qos = qos;
-    topicModel.callback = nil;
     topicModel.extendedCallback = callback;
-    [self.topicListeners setObject:topicModel forKey:topic];
+
+    [self subscribeWithTopicModel:topicModel ackCallback:ackCallback];
+}
+
+- (void)subscribeToTopic:(NSString*)topic
+                     qos:(UInt8)qos
+            fullCallback:(AWSIoTMQTTFullMessageBlock)callback {
+    [self subscribeToTopic:topic
+                       qos:qos
+              fullCallback:callback
+               ackCallback:nil];
+}
+
+- (void)subscribeToTopic:(NSString*)topic
+                     qos:(UInt8)qos
+            fullCallback:(AWSIoTMQTTFullMessageBlock)callback
+             ackCallback:(AWSIoTMQTTAckBlock)ackCallback {
+    if (!_userDidIssueConnect) {
+        [NSException raise:NSInternalInconsistencyException
+                    format:@"Cannot call subscribe before connecting to the server"];
+    }
+
+    if (_userDidIssueDisconnect) {
+        [NSException raise:NSInternalInconsistencyException
+                    format:@"Cannot call subscribe after disconnecting from the server"];
+    }
+
+    AWSDDLogInfo(@"Subscribing to topic %@ with ExtendedmessageCallback", topic);
+    AWSIoTMQTTTopicModel *topicModel = [AWSIoTMQTTTopicModel new];
+    topicModel.topic = topic;
+    topicModel.qos = qos;
+    topicModel.fullCallback = callback;
+
+    [self subscribeWithTopicModel:topicModel ackCallback:ackCallback];
+}
+
+// Private
+- (void)subscribeWithTopicModel:(AWSIoTMQTTTopicModel *)topicModel
+                    ackCallback:(AWSIoTMQTTAckBlock)ackCallback {
+    [self.topicListeners setObject:topicModel forKey:topicModel.topic];
+
     UInt16 messageId = [self.session subscribeToTopic:topicModel.topic atLevel:topicModel.qos];
     AWSDDLogVerbose(@"Now subscribing w/ messageId: %d", messageId);
     if (ackCallback) {
         [self.ackCallbackDictionary setObject:ackCallback
-                                           forKey:[NSNumber numberWithInt:messageId]];
+                                       forKey:[NSNumber numberWithInt:messageId]];
     }
 }
 
@@ -954,7 +1013,7 @@
     [self unsubscribeTopic:topic ackCallback:nil];
 }
 
-#pragma-mark MQTTSessionDelegate
+#pragma mark - MQTTSessionDelegate -
 
 - (void)connectionAgeTimerHandler:(NSTimer*)theTimer {
     self.connectionAgeInSeconds++;
@@ -1065,9 +1124,12 @@
 
 }
 
-#pragma mark subscription distributor
-- (void)session:(AWSMQTTSession*)session newMessage:(NSData*)data onTopic:(NSString*)topic {
-    AWSDDLogVerbose(@"MQTTSessionDelegate newMessage: %@ onTopic: %@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding], topic);
+#pragma mark - subscription distributor -
+
+- (void)session:(AWSMQTTSession*)session
+     newMessage:(AWSMQTTMessage*)message
+        onTopic:(NSString*)topic {
+    AWSDDLogVerbose(@"MQTTSessionDelegate newMessage: %@ onTopic: %@",[[NSString alloc] initWithData:message.data encoding:NSUTF8StringEncoding], topic);
 
     NSArray *topicParts = [topic componentsSeparatedByString: @"/"];
 
@@ -1096,23 +1158,31 @@
             AWSDDLogVerbose(@"<<%@>>Topic: %@ is matched.",[NSThread currentThread], topic);
             AWSIoTMQTTTopicModel *topicModel = [self.topicListeners objectForKey:topicKey];
             if (topicModel) {
+                AWSIoTMessage *iotMessage = [[AWSIoTMessage alloc] initWithMQTTMessage:message];
+
                 if (topicModel.callback != nil) {
                     AWSDDLogVerbose(@"<<%@>>topicModel.callback.", [NSThread currentThread]);
                     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                        topicModel.callback(data);
+                        topicModel.callback(iotMessage.messageData);
                     });
                 }
                 if (topicModel.extendedCallback != nil) {
                     AWSDDLogVerbose(@"<<%@>>topicModel.extendedcallback.", [NSThread currentThread]);
                     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                        topicModel.extendedCallback(self, topic, data);
+                        topicModel.extendedCallback(self, topic, iotMessage.messageData);
+                    });
+                }
+                if (topicModel.fullCallback != nil) {
+                    AWSDDLogVerbose(@"<<%@>>topicModel.messageCallback.", [NSThread currentThread]);
+                    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                        topicModel.fullCallback(iotMessage.topic, iotMessage);
                     });
                 }
                 
                 if (self.clientDelegate != nil ) {
                     AWSDDLogVerbose(@"<<%@>>Calling receviedMessageData on client Delegate.", [NSThread currentThread]);
                     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                        [self.clientDelegate receivedMessageData:data onTopic:topic];
+                        [self.clientDelegate receivedMessageData:message.data onTopic:topic];
                     });
                 }
                 
@@ -1121,33 +1191,32 @@
     }
 }
 
-#pragma mark callback handler
-- (void)session:(AWSMQTTSession*)session
-newAckForMessageId:(UInt16)msgId {
+#pragma mark - callback handler -
+
+- (void)session:(AWSMQTTSession*)session newAckForMessageId:(UInt16)msgId {
     AWSDDLogVerbose(@"MQTTSessionDelegate new ack for msgId: %d", msgId);
-    AWSIoTMQTTAckBlock callback = [[self ackCallbackDictionary] objectForKey:[NSNumber numberWithInt:msgId]];
+    NSNumber *msgIdNumber = [NSNumber numberWithInt:msgId];
+    AWSIoTMQTTAckBlock callback = [[self ackCallbackDictionary] objectForKey:msgIdNumber];
     
     if(callback) {
         // Give callback to the client on a background thread
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
             callback();
         });
-        [[self ackCallbackDictionary] removeObjectForKey:[NSNumber numberWithInt:msgId]];
+        [[self ackCallbackDictionary] removeObjectForKey:msgIdNumber];
     }
 }
 
-#pragma mark AWSSRWebSocketDelegate
+#pragma mark - AWSSRWebSocketDelegate -
 
-- (void)webSocketDidOpen:(AWSSRWebSocket *)webSocket;
-{
+- (void)webSocketDidOpen:(AWSSRWebSocket *)webSocket {
     AWSDDLogInfo(@"Websocket did open and is connected.");
     
     // The WebSocket is connected; at this point we need to create streams
     // for MQTT encode/decode and then instantiate the MQTT client.
-    self.encoderWriteStream = nil;
-    self.decoderReadStream = nil;
-    self.decoderWriteStream = nil;
-    
+    CFReadStreamRef decoderReadStream;
+    CFWriteStreamRef decoderWriteStream;
+
     // CFStreamCreateBoundPair() requires addresses, so use the ivars for
     // these properties.  128KB is the maximum message size for AWS IoT (see https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html).
     // The streams should be able to buffer an entire maximum-sized message
@@ -1155,13 +1224,13 @@ newAckForMessageId:(UInt16)msgId {
     
     //Create a bound pair of read and write streams. Any data written to the write stream is received by the read stream.
     // i.e., whatever is written to the "toDecoderStream" is received by the "decoderStream".
-    CFStreamCreateBoundPair( nil, &_decoderReadStream, &_decoderWriteStream, 128*1024 );    // 128KB buffer size
-    self.decoderStream = (__bridge_transfer NSInputStream *)_decoderReadStream;
-    self.toDecoderStream     = (__bridge_transfer NSOutputStream *)_decoderWriteStream;
+    CFStreamCreateBoundPair(nil, &decoderReadStream, &decoderWriteStream, 128*1024);    // 128KB buffer size
+    self.decoderStream = (__bridge_transfer NSInputStream *)decoderReadStream;
+    self.toDecoderStream = (__bridge_transfer NSOutputStream *)decoderWriteStream;
     [self.toDecoderStream setDelegate:self];
 
     //Create write stream to write to the WebSocket.
-    self.encoderStream     = [AWSIoTWebSocketOutputStreamFactory createAWSIoTWebSocketOutputStreamWithWebSocket:webSocket];
+    self.encoderStream = [AWSIoTWebSocketOutputStreamFactory createAWSIoTWebSocketOutputStreamWithWebSocket:webSocket];
     
     //Create Thread and start with "openStreams" being the entry point.
     if (self.streamsThread) {
@@ -1174,13 +1243,13 @@ newAckForMessageId:(UInt16)msgId {
 }
 
 
-- (void)webSocket:(AWSSRWebSocket *)webSocket didFailWithError:(NSError *)error;
-{
+- (void)webSocket:(AWSSRWebSocket *)webSocket didFailWithError:(NSError *)error {
     AWSDDLogError(@"didFailWithError: Websocket failed With Error %@", error);
 
     // The WebSocket has failed.The input/output streams can be closed here.
     // Also, the webSocket can be set to nil
-    [self.toDecoderStream close];
+    [self cleanUpToDecoderStream];
+
     [self.encoderStream  close];
     [self.webSocket close];
     self.webSocket = nil;
@@ -1198,8 +1267,7 @@ newAckForMessageId:(UInt16)msgId {
     }
 }
 
-- (void)webSocket:(AWSSRWebSocket *)webSocket didReceiveMessage:(id)message;
-{
+- (void)webSocket:(AWSSRWebSocket *)webSocket didReceiveMessage:(id)message {
     if ([message isKindOfClass:[NSData class]])
     {
         NSData *messageData = (NSData *)message;
@@ -1214,13 +1282,12 @@ newAckForMessageId:(UInt16)msgId {
     }
 }
 
-- (void)webSocket:(AWSSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
-{
+- (void)webSocket:(AWSSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     AWSDDLogInfo(@"WebSocket closed with code:%ld with reason:%@", (long)code, reason);
     
     // The WebSocket has closed. The input/output streams can be closed here.
-    // Also, the webSocket can be set to nil
-    [self.toDecoderStream close];
+    [self cleanUpToDecoderStream];
+
     [self.encoderStream  close];
     [self.webSocket close];
     self.webSocket = nil;
@@ -1238,9 +1305,26 @@ newAckForMessageId:(UInt16)msgId {
     }
 }
 
-- (void)webSocket:(AWSSRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload;
-{
+- (void)webSocket:(AWSSRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {
     AWSDDLogVerbose(@"Websocket received pong");
+}
+
+
+# pragma mark - private/serial functions -
+
+- (void)scheduleReconnection {
+    dispatch_assert_queue(self.timerQueue);
+
+    BOOL isConnectingOrConnected = self.mqttStatus == AWSIoTMQTTStatusConnected || self.mqttStatus == AWSIoTMQTTStatusConnecting;
+    if (!self.reconnectTimer && !isConnectingOrConnected) {
+        self.reconnectTimer = [NSTimer timerWithTimeInterval:self.currentReconnectTime
+                                                      target:self
+                                                    selector: @selector(reconnectToSession)
+                                                    userInfo:nil
+                                                     repeats:NO];
+        [[NSRunLoop currentRunLoop] addTimer:self.reconnectTimer forMode:NSRunLoopCommonModes];
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+    }
 }
 
 @end

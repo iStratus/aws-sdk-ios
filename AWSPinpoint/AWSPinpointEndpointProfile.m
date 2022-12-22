@@ -14,6 +14,7 @@
  */
 
 #import <AWSCore/AWSCocoaLumberjack.h>
+#import <AWSCore/AWSUICKeyChainStore.h>
 #import "AWSPinpointEndpointProfile.h"
 #import "AWSPinpointContext.h"
 #import "AWSPinpointConfiguration.h"
@@ -25,6 +26,7 @@ static int const MAX_NUM_OF_METRICS_AND_ATTRIBUTES = 20;
 static int const MAX_ENDPOINT_ATTRIBUTE_METRIC_KEY_LENGTH = 50;
 static int const MAX_ENDPOINT_ATTRIBUTE_VALUE_LENGTH = 100;
 static int const MAX_ENDPOINT_ATTRIBUTE_VALUES = 50;
+NSString *const AWSPinpointOverrideDefaultOptOutKey = @"com.amazonaws.AWSPinpointOverrideDefaultOptOutKey";
 
 @interface AWSPinpointEndpointProfile()
 @property (nonatomic, readwrite) NSString *endpointId;
@@ -33,6 +35,12 @@ static int const MAX_ENDPOINT_ATTRIBUTE_VALUES = 50;
 @property (nonatomic, readwrite) NSDictionary<NSString*,NSNumber*> *metrics;
 @property (nonatomic, readwrite) UTCTimeMillis effectiveDate;
 @property (atomic, readonly) int currentNumOfAttributesAndMetrics;
+@property (nonatomic, strong) NSUserDefaults *userDefaults;
+
+@end
+
+@interface AWSPinpointEndpointProfileUser()
+@property (nonatomic, readwrite) NSDictionary<NSString*,NSArray*> *userAttributes;
 
 @end
 
@@ -40,8 +48,11 @@ static int const MAX_ENDPOINT_ATTRIBUTE_VALUES = 50;
 @property (nonatomic, strong) NSUserDefaults *userDefaults;
 @end
 
-#pragma mark - AWSPinpointEndpointProfile -
+#pragma mark - AWSPinpointEndpointProfile
+
 @implementation AWSPinpointEndpointProfile
+
+@synthesize optOut = _optOutBackingVariable;
 
 NSString *CHANNEL_TYPE = @"APNS";
 NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
@@ -54,16 +65,30 @@ NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
                             endpointId:endpointId
                 applicationLevelOptOut:applicationLevelOptOut
                                  debug:debug
-                          userDefaults:[NSUserDefaults standardUserDefaults]];
+                          userDefaults:[NSUserDefaults standardUserDefaults]
+                              keychain:[AWSUICKeyChainStore keyChainStoreWithService:AWSPinpointContextKeychainService]];
 }
 
 - (instancetype) initWithApplicationId:(NSString*) applicationId
                             endpointId:(NSString*) endpointId
                 applicationLevelOptOut:(BOOL) applicationLevelOptOut
                                  debug:(BOOL) debug
-                          userDefaults:(NSUserDefaults*) userDefaults {
+                          userDefaults:(NSUserDefaults*) userDefaults
+                              keychain: (AWSUICKeyChainStore*) keychain {
     if (self = [super init]) {
         NSData *tokenData = [userDefaults objectForKey:AWSDeviceTokenKey];
+        if (tokenData != nil) {
+            //move to keychain if it's nil
+            //if keychain already has a device token, keep the existing/newer token
+            //remove token from user defaults
+            if ([keychain dataForKey:AWSDeviceTokenKey] == nil) {
+                [keychain setData:tokenData forKey:AWSDeviceTokenKey];
+            }
+            [userDefaults removeObjectForKey:AWSDeviceTokenKey];
+            [userDefaults synchronize];
+        } else {
+            tokenData = [keychain dataForKey:AWSDeviceTokenKey];
+        }
         NSString *deviceTokenString = [AWSPinpointEndpointProfile hexStringFromData:tokenData];
         
         _applicationId = applicationId;
@@ -77,6 +102,7 @@ NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
         _attributes = [NSMutableDictionary dictionary];
         _metrics = [NSMutableDictionary dictionary];
         _user = [AWSPinpointEndpointProfileUser new];
+        _userDefaults = userDefaults;
     }
     return self;
 }
@@ -89,17 +115,13 @@ NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
 - (instancetype)initWithContext:(AWSPinpointContext *) context {
     BOOL applicationLevelOptOut = [self isApplicationLevelOptOut:context];
     if(context.configuration.userDefaults != nil) {
-        return [self initWithApplicationId:context.configuration.appId endpointId:context.uniqueId applicationLevelOptOut:applicationLevelOptOut debug:context.configuration.debug userDefaults:context.configuration.userDefaults];
+        return [self initWithApplicationId:context.configuration.appId endpointId:context.uniqueId applicationLevelOptOut:applicationLevelOptOut debug:context.configuration.debug userDefaults:context.configuration.userDefaults keychain: context.keychain];
     }
     return [self initWithApplicationId: context.configuration.appId endpointId:context.uniqueId applicationLevelOptOut:applicationLevelOptOut debug:context.configuration.debug];
 }
 
 - (void) updateEndpointProfileWithContext:(AWSPinpointContext *) context {
-    NSUserDefaults *userDefaults = context.configuration.userDefaults;
-    if (userDefaults == nil) {
-        userDefaults = [NSUserDefaults standardUserDefaults];
-    }
-    NSData *tokenData = [userDefaults objectForKey:AWSDeviceTokenKey];
+    NSData *tokenData = [context.keychain dataForKey:AWSDeviceTokenKey];
     NSString *deviceTokenString = [AWSPinpointEndpointProfile hexStringFromData:tokenData];
     @synchronized (self) {
         _channelType = context.configuration.debug ? DEBUG_CHANNEL_TYPE : CHANNEL_TYPE;
@@ -109,7 +131,7 @@ NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
         
         //this updates demograhpic information.
         _location = [AWSPinpointEndpointProfileLocation new];
-        _demographic = [AWSPinpointEndpointProfileDemographic defaultAWSPinpointEndpointProfileDemographic];
+        _demographic = self.customDemographic ?: [AWSPinpointEndpointProfileDemographic defaultAWSPinpointEndpointProfileDemographic];
         _effectiveDate = [AWSPinpointDateUtils utcTimeMillisNow];
     }
 }
@@ -121,10 +143,28 @@ NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
     return NO;
 }
 
+- (void) setOptOut:(NSString *)optOut {
+    NSString *overrideDefaultOptOut = [self.userDefaults stringForKey:AWSPinpointOverrideDefaultOptOutKey];
+    if (![overrideDefaultOptOut isEqualToString:optOut]) {
+        [self.userDefaults setObject:optOut forKey:AWSPinpointOverrideDefaultOptOutKey];
+        [self.userDefaults synchronize];
+    }
+
+    _optOutBackingVariable = optOut;
+}
+
+- (NSString *)optOut {
+    return _optOutBackingVariable;
+}
+
 - (void) setEndpointOptOut:(BOOL) applicationLevelOptOut {
-    BOOL isOptedOutForRemoteNotifications = ![AWSPinpointNotificationManager isNotificationEnabled];
+    NSString *overrideDefaultOptOut = [self.userDefaults stringForKey:AWSPinpointOverrideDefaultOptOutKey];
+    NSString *overrideOrNoneAsDefault = [overrideDefaultOptOut length] ? overrideDefaultOptOut : @"NONE";
+    BOOL isUsingPinpointForNotifications = [AWSPinpointNotificationManager isNotificationEnabled] && [self.address length];
+    BOOL isOptedOutForNotifications = !isUsingPinpointForNotifications;
+
     @synchronized (self) {
-        self->_optOut = (applicationLevelOptOut || isOptedOutForRemoteNotifications)? @"ALL": @"NONE";
+        self->_optOutBackingVariable = (applicationLevelOptOut || isOptedOutForNotifications)? @"ALL": overrideOrNoneAsDefault;
     }
 }
 
@@ -312,20 +352,28 @@ NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
     return dictionary;
 }
 
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if (self = [super init]) {
-        _applicationId = [decoder decodeObjectForKey:@"applicationId"];
-        _endpointId = [decoder decodeObjectForKey:@"endpointId"];
-        _channelType = [decoder decodeObjectForKey:@"channelType"];
-        _address = [decoder decodeObjectForKey:@"address"];
-        _location = [decoder decodeObjectForKey:@"location"];
-        _demographic = [decoder decodeObjectForKey:@"demographic"];
-        _attributes = [decoder decodeObjectForKey:@"attributes"];
-        _metrics = [decoder decodeObjectForKey:@"metrics"];
-        _user = [decoder decodeObjectForKey:@"user"];
+        _applicationId = [decoder decodeObjectOfClass:[NSString class] forKey:@"applicationId"];
+        _endpointId = [decoder decodeObjectOfClass:[NSString class] forKey:@"endpointId"];
+        _channelType = [decoder decodeObjectOfClass:[NSString class] forKey:@"channelType"];
+        _address = [decoder decodeObjectOfClass:[NSString class] forKey:@"address"];
+        _optOutBackingVariable = [decoder decodeObjectOfClass:[NSString class] forKey:@"optOut"];
         _effectiveDate = [decoder decodeInt64ForKey:@"effectiveDate"];
-        _optOut = [decoder decodeObjectForKey:@"optOut"];
+        _location = [decoder decodeObjectOfClass:[AWSPinpointEndpointProfileLocation class] forKey:@"location"];
+        _demographic = [decoder decodeObjectOfClass:[AWSPinpointEndpointProfileDemographic class] forKey:@"demographic"];
+
+        NSSet * attributesClasses = [NSSet setWithObjects:[NSDictionary class], [NSArray class], [NSString class], nil];
+        _attributes = [decoder decodeObjectOfClasses:attributesClasses forKey:@"attributes"];
+
+        NSSet * metricsClasses = [NSSet setWithObjects:[NSDictionary class], [NSArray class], [NSNumber class], nil];
+        _metrics = [decoder decodeObjectOfClasses:metricsClasses forKey:@"metrics"];
+
+        _user = [decoder decodeObjectOfClass:[AWSPinpointEndpointProfileUser class] forKey:@"user"];
     }
     return self;
 }
@@ -341,7 +389,7 @@ NSString *DEBUG_CHANNEL_TYPE = @"APNS_SANDBOX";
     [encoder encodeObject:_metrics forKey:@"metrics"];
     [encoder encodeObject:_user forKey:@"user"];
     [encoder encodeInt64:_effectiveDate forKey:@"effectiveDate"];
-    [encoder encodeObject:_optOut forKey:@"optOut"];
+    [encoder encodeObject:_optOutBackingVariable forKey:@"optOut"];
 
 }
 
@@ -411,14 +459,18 @@ NSString *const AWSPinpointDefaultEndpointDemographicUnknown = @"Unknown";
             [self quotedString:self.platformVersion]];
 }
 
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
+
 - (id)initWithCoder:(NSCoder *)decoder {
     if (self = [super init]) {
-        _model = [decoder decodeObjectForKey:@"model"];
-        _timezone = [decoder decodeObjectForKey:@"timezone"];
-        _locale = [decoder decodeObjectForKey:@"locale"];
-        _appVersion = [decoder decodeObjectForKey:@"appVersion"];
-        _platform = [decoder decodeObjectForKey:@"platform"];
-        _platformVersion = [decoder decodeObjectForKey:@"platformVersion"];
+        _model = [decoder decodeObjectOfClass:[NSString class] forKey:@"model"];
+        _timezone = [decoder decodeObjectOfClass:[NSString class] forKey:@"timezone"];
+        _locale = [decoder decodeObjectOfClass:[NSString class] forKey:@"locale"];
+        _appVersion = [decoder decodeObjectOfClass:[NSString class] forKey:@"appVersion"];
+        _platform = [decoder decodeObjectOfClass:[NSString class] forKey:@"platform"];
+        _platformVersion = [decoder decodeObjectOfClass:[NSString class] forKey:@"platformVersion"];
     }
     return self;
 }
@@ -435,6 +487,7 @@ NSString *const AWSPinpointDefaultEndpointDemographicUnknown = @"Unknown";
 @end
 
 #pragma mark - AWSPinpointEndpointProfileLocation
+
 @implementation AWSPinpointEndpointProfileLocation
 
 - (NSString*) quotedString:(NSString*) input {
@@ -457,14 +510,18 @@ NSString *const AWSPinpointDefaultEndpointDemographicUnknown = @"Unknown";
             [self quotedString:self.country]];
 }
 
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
+
 - (id)initWithCoder:(NSCoder *)decoder {
     if (self = [super init]) {
-        _latitude = [decoder decodeObjectForKey:@"latitude"];
-        _longitude = [decoder decodeObjectForKey:@"longitude"];
-        _postalCode = [decoder decodeObjectForKey:@"postalCode"];
-        _city = [decoder decodeObjectForKey:@"city"];
-        _region = [decoder decodeObjectForKey:@"region"];
-        _country = [decoder decodeObjectForKey:@"country"];
+        _latitude = [decoder decodeObjectOfClass:[NSNumber class] forKey:@"latitude"];
+        _longitude = [decoder decodeObjectOfClass:[NSNumber class] forKey:@"longitude"];
+        _postalCode = [decoder decodeObjectOfClass:[NSString class] forKey:@"postalCode"];
+        _city = [decoder decodeObjectOfClass:[NSString class] forKey:@"city"];
+        _region = [decoder decodeObjectOfClass:[NSString class] forKey:@"region"];
+        _country = [decoder decodeObjectOfClass:[NSString class] forKey:@"country"];
     }
     return self;
 }
@@ -481,28 +538,111 @@ NSString *const AWSPinpointDefaultEndpointDemographicUnknown = @"Unknown";
 @end
 
 #pragma mark - AWSPinpointEndpointProfileUser
+
 @implementation AWSPinpointEndpointProfileUser
 
-- (NSString*) quotedString:(NSString*) input {
+- (NSString *)quotedString:(NSString*) input {
     return [NSString stringWithFormat:@"\"%@\"", input];
 }
 
-- (NSString*) description {
+- (NSString *)description {
+    if (!self.userAttributes) {
+        self.userAttributes = [NSMutableDictionary dictionary];
+    }
+    
+    NSError *error;
+    NSData *userAttributesData = [NSJSONSerialization dataWithJSONObject:self.userAttributes
+                                                                 options:0
+                                                                   error:&error];
+    NSString *userAttributesString = [[NSString alloc] initWithData:userAttributesData
+                                                           encoding:NSUTF8StringEncoding];
     return [NSString stringWithFormat:
             @"{"
-            "\"UserId\" : %@}",
-            [self quotedString:self.userId]];
+            "\"UserId\" : %@,"
+            "\"Attributes\":%@}",
+            [self quotedString:self.userId],
+            userAttributesString];
+}
+
++ (BOOL)supportsSecureCoding {
+    return YES;
 }
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if (self = [super init]) {
-        _userId = [decoder decodeObjectForKey:@"userId"];
+        _userId = [decoder decodeObjectOfClass:[NSString class] forKey:@"userId"];
+        _userAttributes = [decoder decodeObjectOfClass:[NSDictionary class] forKey:@"userAttributes"];
     }
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder {
     [encoder encodeObject:_userId forKey:@"userId"];
+    [encoder encodeObject:_userAttributes forKey:@"userAttributes"];
+}
+
+- (void)addUserAttribute:(NSArray *)theValue
+                  forKey:(NSString *)theKey {
+    if (!theKey.length) {
+        AWSDDLogWarn(@"The key of user attribute you tried to add is empty.");
+        return;
+    }
+    
+    if (!self.userAttributes) {
+        self.userAttributes = [NSMutableDictionary dictionary];
+    }
+    
+    [self.userAttributes setValue:[AWSPinpointEndpointProfileUser processUserAttributeValues:theValue]
+                           forKey:[AWSPinpointEndpointProfileUser trimKey:theKey
+                                                                  forType:@"userAttribute"]];
+}
+
+- (NSDictionary *)allUserAttributes {
+    return [NSDictionary dictionaryWithDictionary:self.userAttributes];
+}
+
+- (BOOL)hasUserAttributeForKey:(NSString *)theKey {
+    return [self.userAttributes objectForKey:theKey] != nil;
+}
+
+- (NSArray *)userAttributeForKey:(NSString *)theKey {
+    return [self.userAttributes objectForKey:theKey];
+}
+
++ (NSArray *)processUserAttributeValues:(NSArray*) values {
+    NSMutableArray *trimmedValues = [NSMutableArray arrayWithCapacity:MAX_ENDPOINT_ATTRIBUTE_VALUES];
+    int valuesCount = 0;
+    for (NSString *val in values) {
+        [trimmedValues addObject:[AWSPinpointEndpointProfileUser trimValue:val]];
+        if (++valuesCount >= MAX_ENDPOINT_ATTRIBUTE_VALUES) {
+            AWSDDLogWarn(@"Only %d attributes values are allowed, attribute values has been reduced to %d values.", MAX_ENDPOINT_ATTRIBUTE_VALUES, MAX_ENDPOINT_ATTRIBUTE_VALUES);
+            break;
+        }
+    }
+    return trimmedValues;
+}
+
++ (NSString *)trimKey:(NSString*)theKey
+              forType:(NSString*)theType {
+    NSString* trimmedKey = [AWSPinpointStringUtils clipString:theKey
+                                                   toMaxChars:MAX_ENDPOINT_ATTRIBUTE_METRIC_KEY_LENGTH
+                                            andAppendEllipses:NO];
+    if(trimmedKey.length < theKey.length) {
+        AWSDDLogWarn(@"The %@ key has been trimmed to a length of %0d characters", theType, MAX_ENDPOINT_ATTRIBUTE_METRIC_KEY_LENGTH);
+    }
+
+    return trimmedKey;
+}
+
++ (NSString *)trimValue:(NSString*)theValue {
+    NSString* trimmedValue = [AWSPinpointStringUtils clipString:theValue
+                                                     toMaxChars:MAX_ENDPOINT_ATTRIBUTE_VALUE_LENGTH
+                                              andAppendEllipses:NO];
+    if(trimmedValue.length < theValue.length) {
+        AWSDDLogWarn( @"The attribute value has been trimmed to a length of %0d characters", MAX_ENDPOINT_ATTRIBUTE_VALUE_LENGTH);
+    }
+
+    return trimmedValue;
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 #import "AWSDynamoDBRequestRetryHandler.h"
 
 static NSString *const AWSInfoDynamoDB = @"DynamoDB";
-NSString *const AWSDynamoDBSDKVersion = @"2.11.1";
+NSString *const AWSDynamoDBSDKVersion = @"2.28.5";
 
 
 @interface AWSDynamoDBResponseSerializer : AWSJSONResponseSerializer
@@ -44,11 +44,17 @@ static NSDictionary *errorCodeDictionary = nil;
                             @"BackupNotFoundException" : @(AWSDynamoDBErrorBackupNotFound),
                             @"ConditionalCheckFailedException" : @(AWSDynamoDBErrorConditionalCheckFailed),
                             @"ContinuousBackupsUnavailableException" : @(AWSDynamoDBErrorContinuousBackupsUnavailable),
+                            @"DuplicateItemException" : @(AWSDynamoDBErrorDuplicateItem),
+                            @"ExportConflictException" : @(AWSDynamoDBErrorExportConflict),
+                            @"ExportNotFoundException" : @(AWSDynamoDBErrorExportNotFound),
                             @"GlobalTableAlreadyExistsException" : @(AWSDynamoDBErrorGlobalTableAlreadyExists),
                             @"GlobalTableNotFoundException" : @(AWSDynamoDBErrorGlobalTableNotFound),
                             @"IdempotentParameterMismatchException" : @(AWSDynamoDBErrorIdempotentParameterMismatch),
+                            @"ImportConflictException" : @(AWSDynamoDBErrorImportConflict),
+                            @"ImportNotFoundException" : @(AWSDynamoDBErrorImportNotFound),
                             @"IndexNotFoundException" : @(AWSDynamoDBErrorIndexNotFound),
                             @"InternalServerError" : @(AWSDynamoDBErrorInternalServer),
+                            @"InvalidExportTimeException" : @(AWSDynamoDBErrorInvalidExportTime),
                             @"InvalidRestoreTimeException" : @(AWSDynamoDBErrorInvalidRestoreTime),
                             @"ItemCollectionSizeLimitExceededException" : @(AWSDynamoDBErrorItemCollectionSizeLimitExceeded),
                             @"LimitExceededException" : @(AWSDynamoDBErrorLimitExceeded),
@@ -292,6 +298,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 #pragma mark - Service method
 
+- (AWSTask<AWSDynamoDBBatchExecuteStatementOutput *> *)batchExecuteStatement:(AWSDynamoDBBatchExecuteStatementInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"BatchExecuteStatement"
+                   outputClass:[AWSDynamoDBBatchExecuteStatementOutput class]];
+}
+
+- (void)batchExecuteStatement:(AWSDynamoDBBatchExecuteStatementInput *)request
+     completionHandler:(void (^)(AWSDynamoDBBatchExecuteStatementOutput *response, NSError *error))completionHandler {
+    [[self batchExecuteStatement:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBBatchExecuteStatementOutput *> * _Nonnull task) {
+        AWSDynamoDBBatchExecuteStatementOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSDynamoDBBatchGetItemOutput *> *)batchGetItem:(AWSDynamoDBBatchGetItemInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -522,6 +551,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSDynamoDBDescribeContributorInsightsOutput *> *)describeContributorInsights:(AWSDynamoDBDescribeContributorInsightsInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"DescribeContributorInsights"
+                   outputClass:[AWSDynamoDBDescribeContributorInsightsOutput class]];
+}
+
+- (void)describeContributorInsights:(AWSDynamoDBDescribeContributorInsightsInput *)request
+     completionHandler:(void (^)(AWSDynamoDBDescribeContributorInsightsOutput *response, NSError *error))completionHandler {
+    [[self describeContributorInsights:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBDescribeContributorInsightsOutput *> * _Nonnull task) {
+        AWSDynamoDBDescribeContributorInsightsOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSDynamoDBDescribeEndpointsResponse *> *)describeEndpoints:(AWSDynamoDBDescribeEndpointsRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -535,6 +587,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSDynamoDBDescribeEndpointsResponse *response, NSError *error))completionHandler {
     [[self describeEndpoints:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBDescribeEndpointsResponse *> * _Nonnull task) {
         AWSDynamoDBDescribeEndpointsResponse *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBDescribeExportOutput *> *)describeExport:(AWSDynamoDBDescribeExportInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"DescribeExport"
+                   outputClass:[AWSDynamoDBDescribeExportOutput class]];
+}
+
+- (void)describeExport:(AWSDynamoDBDescribeExportInput *)request
+     completionHandler:(void (^)(AWSDynamoDBDescribeExportOutput *response, NSError *error))completionHandler {
+    [[self describeExport:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBDescribeExportOutput *> * _Nonnull task) {
+        AWSDynamoDBDescribeExportOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -591,6 +666,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSDynamoDBDescribeImportOutput *> *)describeImport:(AWSDynamoDBDescribeImportInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"DescribeImport"
+                   outputClass:[AWSDynamoDBDescribeImportOutput class]];
+}
+
+- (void)describeImport:(AWSDynamoDBDescribeImportInput *)request
+     completionHandler:(void (^)(AWSDynamoDBDescribeImportOutput *response, NSError *error))completionHandler {
+    [[self describeImport:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBDescribeImportOutput *> * _Nonnull task) {
+        AWSDynamoDBDescribeImportOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBDescribeKinesisStreamingDestinationOutput *> *)describeKinesisStreamingDestination:(AWSDynamoDBDescribeKinesisStreamingDestinationInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"DescribeKinesisStreamingDestination"
+                   outputClass:[AWSDynamoDBDescribeKinesisStreamingDestinationOutput class]];
+}
+
+- (void)describeKinesisStreamingDestination:(AWSDynamoDBDescribeKinesisStreamingDestinationInput *)request
+     completionHandler:(void (^)(AWSDynamoDBDescribeKinesisStreamingDestinationOutput *response, NSError *error))completionHandler {
+    [[self describeKinesisStreamingDestination:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBDescribeKinesisStreamingDestinationOutput *> * _Nonnull task) {
+        AWSDynamoDBDescribeKinesisStreamingDestinationOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSDynamoDBDescribeLimitsOutput *> *)describeLimits:(AWSDynamoDBDescribeLimitsInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -637,6 +758,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSDynamoDBDescribeTableReplicaAutoScalingOutput *> *)describeTableReplicaAutoScaling:(AWSDynamoDBDescribeTableReplicaAutoScalingInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"DescribeTableReplicaAutoScaling"
+                   outputClass:[AWSDynamoDBDescribeTableReplicaAutoScalingOutput class]];
+}
+
+- (void)describeTableReplicaAutoScaling:(AWSDynamoDBDescribeTableReplicaAutoScalingInput *)request
+     completionHandler:(void (^)(AWSDynamoDBDescribeTableReplicaAutoScalingOutput *response, NSError *error))completionHandler {
+    [[self describeTableReplicaAutoScaling:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBDescribeTableReplicaAutoScalingOutput *> * _Nonnull task) {
+        AWSDynamoDBDescribeTableReplicaAutoScalingOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSDynamoDBDescribeTimeToLiveOutput *> *)describeTimeToLive:(AWSDynamoDBDescribeTimeToLiveInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -650,6 +794,121 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSDynamoDBDescribeTimeToLiveOutput *response, NSError *error))completionHandler {
     [[self describeTimeToLive:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBDescribeTimeToLiveOutput *> * _Nonnull task) {
         AWSDynamoDBDescribeTimeToLiveOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBKinesisStreamingDestinationOutput *> *)disableKinesisStreamingDestination:(AWSDynamoDBKinesisStreamingDestinationInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"DisableKinesisStreamingDestination"
+                   outputClass:[AWSDynamoDBKinesisStreamingDestinationOutput class]];
+}
+
+- (void)disableKinesisStreamingDestination:(AWSDynamoDBKinesisStreamingDestinationInput *)request
+     completionHandler:(void (^)(AWSDynamoDBKinesisStreamingDestinationOutput *response, NSError *error))completionHandler {
+    [[self disableKinesisStreamingDestination:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBKinesisStreamingDestinationOutput *> * _Nonnull task) {
+        AWSDynamoDBKinesisStreamingDestinationOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBKinesisStreamingDestinationOutput *> *)enableKinesisStreamingDestination:(AWSDynamoDBKinesisStreamingDestinationInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"EnableKinesisStreamingDestination"
+                   outputClass:[AWSDynamoDBKinesisStreamingDestinationOutput class]];
+}
+
+- (void)enableKinesisStreamingDestination:(AWSDynamoDBKinesisStreamingDestinationInput *)request
+     completionHandler:(void (^)(AWSDynamoDBKinesisStreamingDestinationOutput *response, NSError *error))completionHandler {
+    [[self enableKinesisStreamingDestination:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBKinesisStreamingDestinationOutput *> * _Nonnull task) {
+        AWSDynamoDBKinesisStreamingDestinationOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBExecuteStatementOutput *> *)executeStatement:(AWSDynamoDBExecuteStatementInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"ExecuteStatement"
+                   outputClass:[AWSDynamoDBExecuteStatementOutput class]];
+}
+
+- (void)executeStatement:(AWSDynamoDBExecuteStatementInput *)request
+     completionHandler:(void (^)(AWSDynamoDBExecuteStatementOutput *response, NSError *error))completionHandler {
+    [[self executeStatement:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBExecuteStatementOutput *> * _Nonnull task) {
+        AWSDynamoDBExecuteStatementOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBExecuteTransactionOutput *> *)executeTransaction:(AWSDynamoDBExecuteTransactionInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"ExecuteTransaction"
+                   outputClass:[AWSDynamoDBExecuteTransactionOutput class]];
+}
+
+- (void)executeTransaction:(AWSDynamoDBExecuteTransactionInput *)request
+     completionHandler:(void (^)(AWSDynamoDBExecuteTransactionOutput *response, NSError *error))completionHandler {
+    [[self executeTransaction:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBExecuteTransactionOutput *> * _Nonnull task) {
+        AWSDynamoDBExecuteTransactionOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBExportTableToPointInTimeOutput *> *)exportTableToPointInTime:(AWSDynamoDBExportTableToPointInTimeInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"ExportTableToPointInTime"
+                   outputClass:[AWSDynamoDBExportTableToPointInTimeOutput class]];
+}
+
+- (void)exportTableToPointInTime:(AWSDynamoDBExportTableToPointInTimeInput *)request
+     completionHandler:(void (^)(AWSDynamoDBExportTableToPointInTimeOutput *response, NSError *error))completionHandler {
+    [[self exportTableToPointInTime:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBExportTableToPointInTimeOutput *> * _Nonnull task) {
+        AWSDynamoDBExportTableToPointInTimeOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -683,6 +942,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSDynamoDBImportTableOutput *> *)importTable:(AWSDynamoDBImportTableInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"ImportTable"
+                   outputClass:[AWSDynamoDBImportTableOutput class]];
+}
+
+- (void)importTable:(AWSDynamoDBImportTableInput *)request
+     completionHandler:(void (^)(AWSDynamoDBImportTableOutput *response, NSError *error))completionHandler {
+    [[self importTable:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBImportTableOutput *> * _Nonnull task) {
+        AWSDynamoDBImportTableOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSDynamoDBListBackupsOutput *> *)listBackups:(AWSDynamoDBListBackupsInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -706,6 +988,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSDynamoDBListContributorInsightsOutput *> *)listContributorInsights:(AWSDynamoDBListContributorInsightsInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"ListContributorInsights"
+                   outputClass:[AWSDynamoDBListContributorInsightsOutput class]];
+}
+
+- (void)listContributorInsights:(AWSDynamoDBListContributorInsightsInput *)request
+     completionHandler:(void (^)(AWSDynamoDBListContributorInsightsOutput *response, NSError *error))completionHandler {
+    [[self listContributorInsights:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBListContributorInsightsOutput *> * _Nonnull task) {
+        AWSDynamoDBListContributorInsightsOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBListExportsOutput *> *)listExports:(AWSDynamoDBListExportsInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"ListExports"
+                   outputClass:[AWSDynamoDBListExportsOutput class]];
+}
+
+- (void)listExports:(AWSDynamoDBListExportsInput *)request
+     completionHandler:(void (^)(AWSDynamoDBListExportsOutput *response, NSError *error))completionHandler {
+    [[self listExports:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBListExportsOutput *> * _Nonnull task) {
+        AWSDynamoDBListExportsOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSDynamoDBListGlobalTablesOutput *> *)listGlobalTables:(AWSDynamoDBListGlobalTablesInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -719,6 +1047,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSDynamoDBListGlobalTablesOutput *response, NSError *error))completionHandler {
     [[self listGlobalTables:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBListGlobalTablesOutput *> * _Nonnull task) {
         AWSDynamoDBListGlobalTablesOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBListImportsOutput *> *)listImports:(AWSDynamoDBListImportsInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"ListImports"
+                   outputClass:[AWSDynamoDBListImportsOutput class]];
+}
+
+- (void)listImports:(AWSDynamoDBListImportsInput *)request
+     completionHandler:(void (^)(AWSDynamoDBListImportsOutput *response, NSError *error))completionHandler {
+    [[self listImports:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBListImportsOutput *> * _Nonnull task) {
+        AWSDynamoDBListImportsOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -1003,6 +1354,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSDynamoDBUpdateContributorInsightsOutput *> *)updateContributorInsights:(AWSDynamoDBUpdateContributorInsightsInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"UpdateContributorInsights"
+                   outputClass:[AWSDynamoDBUpdateContributorInsightsOutput class]];
+}
+
+- (void)updateContributorInsights:(AWSDynamoDBUpdateContributorInsightsInput *)request
+     completionHandler:(void (^)(AWSDynamoDBUpdateContributorInsightsOutput *response, NSError *error))completionHandler {
+    [[self updateContributorInsights:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBUpdateContributorInsightsOutput *> * _Nonnull task) {
+        AWSDynamoDBUpdateContributorInsightsOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSDynamoDBUpdateGlobalTableOutput *> *)updateGlobalTable:(AWSDynamoDBUpdateGlobalTableInput *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -1085,6 +1459,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSDynamoDBUpdateTableOutput *response, NSError *error))completionHandler {
     [[self updateTable:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBUpdateTableOutput *> * _Nonnull task) {
         AWSDynamoDBUpdateTableOutput *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSDynamoDBUpdateTableReplicaAutoScalingOutput *> *)updateTableReplicaAutoScaling:(AWSDynamoDBUpdateTableReplicaAutoScalingInput *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@"DynamoDB_20120810"
+                 operationName:@"UpdateTableReplicaAutoScaling"
+                   outputClass:[AWSDynamoDBUpdateTableReplicaAutoScalingOutput class]];
+}
+
+- (void)updateTableReplicaAutoScaling:(AWSDynamoDBUpdateTableReplicaAutoScalingInput *)request
+     completionHandler:(void (^)(AWSDynamoDBUpdateTableReplicaAutoScalingOutput *response, NSError *error))completionHandler {
+    [[self updateTableReplicaAutoScaling:request] continueWithBlock:^id _Nullable(AWSTask<AWSDynamoDBUpdateTableReplicaAutoScalingOutput *> * _Nonnull task) {
+        AWSDynamoDBUpdateTableReplicaAutoScalingOutput *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {

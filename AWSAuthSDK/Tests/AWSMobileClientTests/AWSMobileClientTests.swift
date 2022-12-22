@@ -8,12 +8,20 @@ import XCTest
 @testable import AWSMobileClient
 import AWSAuthCore
 import AWSCognitoIdentityProvider
+import AWSTestResources
 
-class AWSMobileClientTests: AWSMobileClientBaseTests {
+class AWSMobileClientTests: AWSMobileClientTestBase {
     
     func testSignUp() {
         let username = "testUser" + UUID().uuidString
         signUpUser(username: username)
+        adminVerifyUser(username: username)
+    }
+    
+    func testSignUpWithValidClientMetaData() {
+        let username = "testUser" + UUID().uuidString
+        signUpUser(username: username,
+                   clientMetaData: ["customKey":"cutomValue"])
         adminVerifyUser(username: username)
     }
     
@@ -22,7 +30,8 @@ class AWSMobileClientTests: AWSMobileClientBaseTests {
         signUpUser(username: username)
 
         let verificationCodeSent = expectation(description: "verification code should be sent via email.")
-        AWSMobileClient.default().resendSignUpCode(username: username) { (result, error) in
+        let clientMetaData = ["client": "metadata"]
+        AWSMobileClient.default().resendSignUpCode(username: username, clientMetaData: clientMetaData) { (result, error) in
             if let error = error {
                 XCTFail("Failed due to error: \(error.localizedDescription)")
                 return
@@ -65,13 +74,15 @@ class AWSMobileClientTests: AWSMobileClientBaseTests {
     }
     
     func testFederatedSignInDeveloperAuthenticatedIdentities() {
+        let developerProviderName = AWSTestConfiguration.getIntegrationTestConfigurationValue(forPackageId: "mobileclient",
+                                                                                     configKey: "developer_provider_name")
         let getOpendIdRequest = AWSCognitoIdentityGetOpenIdTokenForDeveloperIdentityInput()
-        getOpendIdRequest?.identityPoolId = identityPoolId
-        getOpendIdRequest?.logins = ["login.test.awsmobileclient": "test_users"]
+        getOpendIdRequest?.identityPoolId = AWSMobileClientTestBase.identityPoolId
+        getOpendIdRequest?.logins = [developerProviderName: "test_users"]
         var identityId: String?
         var token: String?
         
-        cognitoIdentity!.getOpenIdToken(forDeveloperIdentity: getOpendIdRequest!).continueWith { (task) -> Any? in
+        AWSMobileClientTestBase.cognitoIdentity!.getOpenIdToken(forDeveloperIdentity: getOpendIdRequest!).continueWith { (task) -> Any? in
             if let result = task.result {
                 identityId = result.identityId
                 token = result.token
