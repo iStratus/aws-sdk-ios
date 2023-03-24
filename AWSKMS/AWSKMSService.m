@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 #import "AWSKMSResources.h"
 
 static NSString *const AWSInfoKMS = @"KMS";
-NSString *const AWSKMSSDKVersion = @"2.28.5";
+NSString *const AWSKMSSDKVersion = @"2.30.4";
 
 
 @interface AWSKMSResponseSerializer : AWSJSONResponseSerializer
@@ -73,6 +73,18 @@ static NSDictionary *errorCodeDictionary = nil;
                             @"NotFoundException" : @(AWSKMSErrorNotFound),
                             @"TagException" : @(AWSKMSErrorTag),
                             @"UnsupportedOperationException" : @(AWSKMSErrorUnsupportedOperation),
+                            @"XksKeyAlreadyInUseException" : @(AWSKMSErrorXksKeyAlreadyInUse),
+                            @"XksKeyInvalidConfigurationException" : @(AWSKMSErrorXksKeyInvalidConfiguration),
+                            @"XksKeyNotFoundException" : @(AWSKMSErrorXksKeyNotFound),
+                            @"XksProxyIncorrectAuthenticationCredentialException" : @(AWSKMSErrorXksProxyIncorrectAuthenticationCredential),
+                            @"XksProxyInvalidConfigurationException" : @(AWSKMSErrorXksProxyInvalidConfiguration),
+                            @"XksProxyInvalidResponseException" : @(AWSKMSErrorXksProxyInvalidResponse),
+                            @"XksProxyUriEndpointInUseException" : @(AWSKMSErrorXksProxyUriEndpointInUse),
+                            @"XksProxyUriInUseException" : @(AWSKMSErrorXksProxyUriInUse),
+                            @"XksProxyUriUnreachableException" : @(AWSKMSErrorXksProxyUriUnreachable),
+                            @"XksProxyVpcEndpointServiceInUseException" : @(AWSKMSErrorXksProxyVpcEndpointServiceInUse),
+                            @"XksProxyVpcEndpointServiceInvalidConfigurationException" : @(AWSKMSErrorXksProxyVpcEndpointServiceInvalidConfiguration),
+                            @"XksProxyVpcEndpointServiceNotFoundException" : @(AWSKMSErrorXksProxyVpcEndpointServiceNotFound),
                             };
 }
 

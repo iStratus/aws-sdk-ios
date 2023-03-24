@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -94,6 +94,8 @@ typedef NS_ENUM(NSInteger, AWSPollyLanguageCode) {
     AWSPollyLanguageCodeCaES,
     AWSPollyLanguageCodeDeAT,
     AWSPollyLanguageCodeYueCN,
+    AWSPollyLanguageCodeArAE,
+    AWSPollyLanguageCodeFiFI,
 };
 
 typedef NS_ENUM(NSInteger, AWSPollyOutputFormat) {
@@ -205,6 +207,17 @@ typedef NS_ENUM(NSInteger, AWSPollyVoiceId) {
     AWSPollyVoiceIdElin,
     AWSPollyVoiceIdIda,
     AWSPollyVoiceIdSuvi,
+    AWSPollyVoiceIdOla,
+    AWSPollyVoiceIdHala,
+    AWSPollyVoiceIdAndres,
+    AWSPollyVoiceIdSergio,
+    AWSPollyVoiceIdRemi,
+    AWSPollyVoiceIdAdriano,
+    AWSPollyVoiceIdThiago,
+    AWSPollyVoiceIdRuth,
+    AWSPollyVoiceIdStephen,
+    AWSPollyVoiceIdKazuha,
+    AWSPollyVoiceIdTomoko,
 };
 
 @class AWSPollyDeleteLexiconInput;

@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 #import "AWSEC2Serializer.h"
 
 static NSString *const AWSInfoEC2 = @"EC2";
-NSString *const AWSEC2SDKVersion = @"2.28.5";
+NSString *const AWSEC2SDKVersion = @"2.30.4";
 
 
 @interface AWSEC2ResponseSerializer : AWSXMLResponseSerializer
@@ -593,6 +593,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2AssignPrivateNatGatewayAddressResult *> *)assignPrivateNatGatewayAddress:(AWSEC2AssignPrivateNatGatewayAddressRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"AssignPrivateNatGatewayAddress"
+                   outputClass:[AWSEC2AssignPrivateNatGatewayAddressResult class]];
+}
+
+- (void)assignPrivateNatGatewayAddress:(AWSEC2AssignPrivateNatGatewayAddressRequest *)request
+     completionHandler:(void (^)(AWSEC2AssignPrivateNatGatewayAddressResult *response, NSError *error))completionHandler {
+    [[self assignPrivateNatGatewayAddress:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2AssignPrivateNatGatewayAddressResult *> * _Nonnull task) {
+        AWSEC2AssignPrivateNatGatewayAddressResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSEC2AssociateAddressResult *> *)associateAddress:(AWSEC2AssociateAddressRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -720,6 +743,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2AssociateInstanceEventWindowResult *response, NSError *error))completionHandler {
     [[self associateInstanceEventWindow:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2AssociateInstanceEventWindowResult *> * _Nonnull task) {
         AWSEC2AssociateInstanceEventWindowResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2AssociateIpamResourceDiscoveryResult *> *)associateIpamResourceDiscovery:(AWSEC2AssociateIpamResourceDiscoveryRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"AssociateIpamResourceDiscovery"
+                   outputClass:[AWSEC2AssociateIpamResourceDiscoveryResult class]];
+}
+
+- (void)associateIpamResourceDiscovery:(AWSEC2AssociateIpamResourceDiscoveryRequest *)request
+     completionHandler:(void (^)(AWSEC2AssociateIpamResourceDiscoveryResult *response, NSError *error))completionHandler {
+    [[self associateIpamResourceDiscovery:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2AssociateIpamResourceDiscoveryResult *> * _Nonnull task) {
+        AWSEC2AssociateIpamResourceDiscoveryResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2AssociateNatGatewayAddressResult *> *)associateNatGatewayAddress:(AWSEC2AssociateNatGatewayAddressRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"AssociateNatGatewayAddress"
+                   outputClass:[AWSEC2AssociateNatGatewayAddressResult class]];
+}
+
+- (void)associateNatGatewayAddress:(AWSEC2AssociateNatGatewayAddressRequest *)request
+     completionHandler:(void (^)(AWSEC2AssociateNatGatewayAddressResult *response, NSError *error))completionHandler {
+    [[self associateNatGatewayAddress:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2AssociateNatGatewayAddressResult *> * _Nonnull task) {
+        AWSEC2AssociateNatGatewayAddressResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -949,6 +1018,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2AttachNetworkInterfaceResult *response, NSError *error))completionHandler {
     [[self attachNetworkInterface:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2AttachNetworkInterfaceResult *> * _Nonnull task) {
         AWSEC2AttachNetworkInterfaceResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2AttachVerifiedAccessTrustProviderResult *> *)attachVerifiedAccessTrustProvider:(AWSEC2AttachVerifiedAccessTrustProviderRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"AttachVerifiedAccessTrustProvider"
+                   outputClass:[AWSEC2AttachVerifiedAccessTrustProviderResult class]];
+}
+
+- (void)attachVerifiedAccessTrustProvider:(AWSEC2AttachVerifiedAccessTrustProviderRequest *)request
+     completionHandler:(void (^)(AWSEC2AttachVerifiedAccessTrustProviderResult *response, NSError *error))completionHandler {
+    [[self attachVerifiedAccessTrustProvider:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2AttachVerifiedAccessTrustProviderResult *> * _Nonnull task) {
+        AWSEC2AttachVerifiedAccessTrustProviderResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -1890,6 +1982,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2CreateIpamPoolResult *response, NSError *error))completionHandler {
     [[self createIpamPool:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2CreateIpamPoolResult *> * _Nonnull task) {
         AWSEC2CreateIpamPoolResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2CreateIpamResourceDiscoveryResult *> *)createIpamResourceDiscovery:(AWSEC2CreateIpamResourceDiscoveryRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"CreateIpamResourceDiscovery"
+                   outputClass:[AWSEC2CreateIpamResourceDiscoveryResult class]];
+}
+
+- (void)createIpamResourceDiscovery:(AWSEC2CreateIpamResourceDiscoveryRequest *)request
+     completionHandler:(void (^)(AWSEC2CreateIpamResourceDiscoveryResult *response, NSError *error))completionHandler {
+    [[self createIpamResourceDiscovery:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2CreateIpamResourceDiscoveryResult *> * _Nonnull task) {
+        AWSEC2CreateIpamResourceDiscoveryResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -2956,6 +3071,98 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2CreateVerifiedAccessEndpointResult *> *)createVerifiedAccessEndpoint:(AWSEC2CreateVerifiedAccessEndpointRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"CreateVerifiedAccessEndpoint"
+                   outputClass:[AWSEC2CreateVerifiedAccessEndpointResult class]];
+}
+
+- (void)createVerifiedAccessEndpoint:(AWSEC2CreateVerifiedAccessEndpointRequest *)request
+     completionHandler:(void (^)(AWSEC2CreateVerifiedAccessEndpointResult *response, NSError *error))completionHandler {
+    [[self createVerifiedAccessEndpoint:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2CreateVerifiedAccessEndpointResult *> * _Nonnull task) {
+        AWSEC2CreateVerifiedAccessEndpointResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2CreateVerifiedAccessGroupResult *> *)createVerifiedAccessGroup:(AWSEC2CreateVerifiedAccessGroupRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"CreateVerifiedAccessGroup"
+                   outputClass:[AWSEC2CreateVerifiedAccessGroupResult class]];
+}
+
+- (void)createVerifiedAccessGroup:(AWSEC2CreateVerifiedAccessGroupRequest *)request
+     completionHandler:(void (^)(AWSEC2CreateVerifiedAccessGroupResult *response, NSError *error))completionHandler {
+    [[self createVerifiedAccessGroup:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2CreateVerifiedAccessGroupResult *> * _Nonnull task) {
+        AWSEC2CreateVerifiedAccessGroupResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2CreateVerifiedAccessInstanceResult *> *)createVerifiedAccessInstance:(AWSEC2CreateVerifiedAccessInstanceRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"CreateVerifiedAccessInstance"
+                   outputClass:[AWSEC2CreateVerifiedAccessInstanceResult class]];
+}
+
+- (void)createVerifiedAccessInstance:(AWSEC2CreateVerifiedAccessInstanceRequest *)request
+     completionHandler:(void (^)(AWSEC2CreateVerifiedAccessInstanceResult *response, NSError *error))completionHandler {
+    [[self createVerifiedAccessInstance:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2CreateVerifiedAccessInstanceResult *> * _Nonnull task) {
+        AWSEC2CreateVerifiedAccessInstanceResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2CreateVerifiedAccessTrustProviderResult *> *)createVerifiedAccessTrustProvider:(AWSEC2CreateVerifiedAccessTrustProviderRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"CreateVerifiedAccessTrustProvider"
+                   outputClass:[AWSEC2CreateVerifiedAccessTrustProviderResult class]];
+}
+
+- (void)createVerifiedAccessTrustProvider:(AWSEC2CreateVerifiedAccessTrustProviderRequest *)request
+     completionHandler:(void (^)(AWSEC2CreateVerifiedAccessTrustProviderResult *response, NSError *error))completionHandler {
+    [[self createVerifiedAccessTrustProvider:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2CreateVerifiedAccessTrustProviderResult *> * _Nonnull task) {
+        AWSEC2CreateVerifiedAccessTrustProviderResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSEC2Volume *> *)createVolume:(AWSEC2CreateVolumeRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -3494,6 +3701,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2DeleteIpamPoolResult *response, NSError *error))completionHandler {
     [[self deleteIpamPool:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DeleteIpamPoolResult *> * _Nonnull task) {
         AWSEC2DeleteIpamPoolResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DeleteIpamResourceDiscoveryResult *> *)deleteIpamResourceDiscovery:(AWSEC2DeleteIpamResourceDiscoveryRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DeleteIpamResourceDiscovery"
+                   outputClass:[AWSEC2DeleteIpamResourceDiscoveryResult class]];
+}
+
+- (void)deleteIpamResourceDiscovery:(AWSEC2DeleteIpamResourceDiscoveryRequest *)request
+     completionHandler:(void (^)(AWSEC2DeleteIpamResourceDiscoveryResult *response, NSError *error))completionHandler {
+    [[self deleteIpamResourceDiscovery:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DeleteIpamResourceDiscoveryResult *> * _Nonnull task) {
+        AWSEC2DeleteIpamResourceDiscoveryResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -4504,6 +4734,98 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2DeleteVerifiedAccessEndpointResult *> *)deleteVerifiedAccessEndpoint:(AWSEC2DeleteVerifiedAccessEndpointRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DeleteVerifiedAccessEndpoint"
+                   outputClass:[AWSEC2DeleteVerifiedAccessEndpointResult class]];
+}
+
+- (void)deleteVerifiedAccessEndpoint:(AWSEC2DeleteVerifiedAccessEndpointRequest *)request
+     completionHandler:(void (^)(AWSEC2DeleteVerifiedAccessEndpointResult *response, NSError *error))completionHandler {
+    [[self deleteVerifiedAccessEndpoint:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DeleteVerifiedAccessEndpointResult *> * _Nonnull task) {
+        AWSEC2DeleteVerifiedAccessEndpointResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DeleteVerifiedAccessGroupResult *> *)deleteVerifiedAccessGroup:(AWSEC2DeleteVerifiedAccessGroupRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DeleteVerifiedAccessGroup"
+                   outputClass:[AWSEC2DeleteVerifiedAccessGroupResult class]];
+}
+
+- (void)deleteVerifiedAccessGroup:(AWSEC2DeleteVerifiedAccessGroupRequest *)request
+     completionHandler:(void (^)(AWSEC2DeleteVerifiedAccessGroupResult *response, NSError *error))completionHandler {
+    [[self deleteVerifiedAccessGroup:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DeleteVerifiedAccessGroupResult *> * _Nonnull task) {
+        AWSEC2DeleteVerifiedAccessGroupResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DeleteVerifiedAccessInstanceResult *> *)deleteVerifiedAccessInstance:(AWSEC2DeleteVerifiedAccessInstanceRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DeleteVerifiedAccessInstance"
+                   outputClass:[AWSEC2DeleteVerifiedAccessInstanceResult class]];
+}
+
+- (void)deleteVerifiedAccessInstance:(AWSEC2DeleteVerifiedAccessInstanceRequest *)request
+     completionHandler:(void (^)(AWSEC2DeleteVerifiedAccessInstanceResult *response, NSError *error))completionHandler {
+    [[self deleteVerifiedAccessInstance:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DeleteVerifiedAccessInstanceResult *> * _Nonnull task) {
+        AWSEC2DeleteVerifiedAccessInstanceResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DeleteVerifiedAccessTrustProviderResult *> *)deleteVerifiedAccessTrustProvider:(AWSEC2DeleteVerifiedAccessTrustProviderRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DeleteVerifiedAccessTrustProvider"
+                   outputClass:[AWSEC2DeleteVerifiedAccessTrustProviderResult class]];
+}
+
+- (void)deleteVerifiedAccessTrustProvider:(AWSEC2DeleteVerifiedAccessTrustProviderRequest *)request
+     completionHandler:(void (^)(AWSEC2DeleteVerifiedAccessTrustProviderResult *response, NSError *error))completionHandler {
+    [[self deleteVerifiedAccessTrustProvider:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DeleteVerifiedAccessTrustProviderResult *> * _Nonnull task) {
+        AWSEC2DeleteVerifiedAccessTrustProviderResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)deleteVolume:(AWSEC2DeleteVolumeRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -4994,6 +5316,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2DescribeAvailabilityZonesResult *response, NSError *error))completionHandler {
     [[self describeAvailabilityZones:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeAvailabilityZonesResult *> * _Nonnull task) {
         AWSEC2DescribeAvailabilityZonesResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DescribeAwsNetworkPerformanceMetricSubscriptionsResult *> *)describeAwsNetworkPerformanceMetricSubscriptions:(AWSEC2DescribeAwsNetworkPerformanceMetricSubscriptionsRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeAwsNetworkPerformanceMetricSubscriptions"
+                   outputClass:[AWSEC2DescribeAwsNetworkPerformanceMetricSubscriptionsResult class]];
+}
+
+- (void)describeAwsNetworkPerformanceMetricSubscriptions:(AWSEC2DescribeAwsNetworkPerformanceMetricSubscriptionsRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeAwsNetworkPerformanceMetricSubscriptionsResult *response, NSError *error))completionHandler {
+    [[self describeAwsNetworkPerformanceMetricSubscriptions:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeAwsNetworkPerformanceMetricSubscriptionsResult *> * _Nonnull task) {
+        AWSEC2DescribeAwsNetworkPerformanceMetricSubscriptionsResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -6075,6 +6420,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2DescribeIpamPoolsResult *response, NSError *error))completionHandler {
     [[self describeIpamPools:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeIpamPoolsResult *> * _Nonnull task) {
         AWSEC2DescribeIpamPoolsResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DescribeIpamResourceDiscoveriesResult *> *)describeIpamResourceDiscoveries:(AWSEC2DescribeIpamResourceDiscoveriesRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeIpamResourceDiscoveries"
+                   outputClass:[AWSEC2DescribeIpamResourceDiscoveriesResult class]];
+}
+
+- (void)describeIpamResourceDiscoveries:(AWSEC2DescribeIpamResourceDiscoveriesRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeIpamResourceDiscoveriesResult *response, NSError *error))completionHandler {
+    [[self describeIpamResourceDiscoveries:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeIpamResourceDiscoveriesResult *> * _Nonnull task) {
+        AWSEC2DescribeIpamResourceDiscoveriesResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DescribeIpamResourceDiscoveryAssociationsResult *> *)describeIpamResourceDiscoveryAssociations:(AWSEC2DescribeIpamResourceDiscoveryAssociationsRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeIpamResourceDiscoveryAssociations"
+                   outputClass:[AWSEC2DescribeIpamResourceDiscoveryAssociationsResult class]];
+}
+
+- (void)describeIpamResourceDiscoveryAssociations:(AWSEC2DescribeIpamResourceDiscoveryAssociationsRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeIpamResourceDiscoveryAssociationsResult *response, NSError *error))completionHandler {
+    [[self describeIpamResourceDiscoveryAssociations:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeIpamResourceDiscoveryAssociationsResult *> * _Nonnull task) {
+        AWSEC2DescribeIpamResourceDiscoveryAssociationsResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -7603,6 +7994,121 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2DescribeVerifiedAccessEndpointsResult *> *)describeVerifiedAccessEndpoints:(AWSEC2DescribeVerifiedAccessEndpointsRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeVerifiedAccessEndpoints"
+                   outputClass:[AWSEC2DescribeVerifiedAccessEndpointsResult class]];
+}
+
+- (void)describeVerifiedAccessEndpoints:(AWSEC2DescribeVerifiedAccessEndpointsRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeVerifiedAccessEndpointsResult *response, NSError *error))completionHandler {
+    [[self describeVerifiedAccessEndpoints:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeVerifiedAccessEndpointsResult *> * _Nonnull task) {
+        AWSEC2DescribeVerifiedAccessEndpointsResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DescribeVerifiedAccessGroupsResult *> *)describeVerifiedAccessGroups:(AWSEC2DescribeVerifiedAccessGroupsRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeVerifiedAccessGroups"
+                   outputClass:[AWSEC2DescribeVerifiedAccessGroupsResult class]];
+}
+
+- (void)describeVerifiedAccessGroups:(AWSEC2DescribeVerifiedAccessGroupsRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeVerifiedAccessGroupsResult *response, NSError *error))completionHandler {
+    [[self describeVerifiedAccessGroups:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeVerifiedAccessGroupsResult *> * _Nonnull task) {
+        AWSEC2DescribeVerifiedAccessGroupsResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DescribeVerifiedAccessInstanceLoggingConfigurationsResult *> *)describeVerifiedAccessInstanceLoggingConfigurations:(AWSEC2DescribeVerifiedAccessInstanceLoggingConfigurationsRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeVerifiedAccessInstanceLoggingConfigurations"
+                   outputClass:[AWSEC2DescribeVerifiedAccessInstanceLoggingConfigurationsResult class]];
+}
+
+- (void)describeVerifiedAccessInstanceLoggingConfigurations:(AWSEC2DescribeVerifiedAccessInstanceLoggingConfigurationsRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeVerifiedAccessInstanceLoggingConfigurationsResult *response, NSError *error))completionHandler {
+    [[self describeVerifiedAccessInstanceLoggingConfigurations:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeVerifiedAccessInstanceLoggingConfigurationsResult *> * _Nonnull task) {
+        AWSEC2DescribeVerifiedAccessInstanceLoggingConfigurationsResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DescribeVerifiedAccessInstancesResult *> *)describeVerifiedAccessInstances:(AWSEC2DescribeVerifiedAccessInstancesRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeVerifiedAccessInstances"
+                   outputClass:[AWSEC2DescribeVerifiedAccessInstancesResult class]];
+}
+
+- (void)describeVerifiedAccessInstances:(AWSEC2DescribeVerifiedAccessInstancesRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeVerifiedAccessInstancesResult *response, NSError *error))completionHandler {
+    [[self describeVerifiedAccessInstances:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeVerifiedAccessInstancesResult *> * _Nonnull task) {
+        AWSEC2DescribeVerifiedAccessInstancesResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DescribeVerifiedAccessTrustProvidersResult *> *)describeVerifiedAccessTrustProviders:(AWSEC2DescribeVerifiedAccessTrustProvidersRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DescribeVerifiedAccessTrustProviders"
+                   outputClass:[AWSEC2DescribeVerifiedAccessTrustProvidersResult class]];
+}
+
+- (void)describeVerifiedAccessTrustProviders:(AWSEC2DescribeVerifiedAccessTrustProvidersRequest *)request
+     completionHandler:(void (^)(AWSEC2DescribeVerifiedAccessTrustProvidersResult *response, NSError *error))completionHandler {
+    [[self describeVerifiedAccessTrustProviders:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DescribeVerifiedAccessTrustProvidersResult *> * _Nonnull task) {
+        AWSEC2DescribeVerifiedAccessTrustProvidersResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSEC2DescribeVolumeAttributeResult *> *)describeVolumeAttribute:(AWSEC2DescribeVolumeAttributeRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -8061,6 +8567,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2DetachVerifiedAccessTrustProviderResult *> *)detachVerifiedAccessTrustProvider:(AWSEC2DetachVerifiedAccessTrustProviderRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DetachVerifiedAccessTrustProvider"
+                   outputClass:[AWSEC2DetachVerifiedAccessTrustProviderResult class]];
+}
+
+- (void)detachVerifiedAccessTrustProvider:(AWSEC2DetachVerifiedAccessTrustProviderRequest *)request
+     completionHandler:(void (^)(AWSEC2DetachVerifiedAccessTrustProviderResult *response, NSError *error))completionHandler {
+    [[self detachVerifiedAccessTrustProvider:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DetachVerifiedAccessTrustProviderResult *> * _Nonnull task) {
+        AWSEC2DetachVerifiedAccessTrustProviderResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSEC2VolumeAttachment *> *)detachVolume:(AWSEC2DetachVolumeRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -8119,6 +8648,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2DisableAddressTransferResult *response, NSError *error))completionHandler {
     [[self disableAddressTransfer:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DisableAddressTransferResult *> * _Nonnull task) {
         AWSEC2DisableAddressTransferResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DisableAwsNetworkPerformanceMetricSubscriptionResult *> *)disableAwsNetworkPerformanceMetricSubscription:(AWSEC2DisableAwsNetworkPerformanceMetricSubscriptionRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DisableAwsNetworkPerformanceMetricSubscription"
+                   outputClass:[AWSEC2DisableAwsNetworkPerformanceMetricSubscriptionResult class]];
+}
+
+- (void)disableAwsNetworkPerformanceMetricSubscription:(AWSEC2DisableAwsNetworkPerformanceMetricSubscriptionRequest *)request
+     completionHandler:(void (^)(AWSEC2DisableAwsNetworkPerformanceMetricSubscriptionResult *response, NSError *error))completionHandler {
+    [[self disableAwsNetworkPerformanceMetricSubscription:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DisableAwsNetworkPerformanceMetricSubscriptionResult *> * _Nonnull task) {
+        AWSEC2DisableAwsNetworkPerformanceMetricSubscriptionResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -8472,6 +9024,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2DisassociateIpamResourceDiscoveryResult *> *)disassociateIpamResourceDiscovery:(AWSEC2DisassociateIpamResourceDiscoveryRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DisassociateIpamResourceDiscovery"
+                   outputClass:[AWSEC2DisassociateIpamResourceDiscoveryResult class]];
+}
+
+- (void)disassociateIpamResourceDiscovery:(AWSEC2DisassociateIpamResourceDiscoveryRequest *)request
+     completionHandler:(void (^)(AWSEC2DisassociateIpamResourceDiscoveryResult *response, NSError *error))completionHandler {
+    [[self disassociateIpamResourceDiscovery:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DisassociateIpamResourceDiscoveryResult *> * _Nonnull task) {
+        AWSEC2DisassociateIpamResourceDiscoveryResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2DisassociateNatGatewayAddressResult *> *)disassociateNatGatewayAddress:(AWSEC2DisassociateNatGatewayAddressRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"DisassociateNatGatewayAddress"
+                   outputClass:[AWSEC2DisassociateNatGatewayAddressResult class]];
+}
+
+- (void)disassociateNatGatewayAddress:(AWSEC2DisassociateNatGatewayAddressRequest *)request
+     completionHandler:(void (^)(AWSEC2DisassociateNatGatewayAddressResult *response, NSError *error))completionHandler {
+    [[self disassociateNatGatewayAddress:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2DisassociateNatGatewayAddressResult *> * _Nonnull task) {
+        AWSEC2DisassociateNatGatewayAddressResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)disassociateRouteTable:(AWSEC2DisassociateRouteTableRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -8655,6 +9253,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2EnableAwsNetworkPerformanceMetricSubscriptionResult *> *)enableAwsNetworkPerformanceMetricSubscription:(AWSEC2EnableAwsNetworkPerformanceMetricSubscriptionRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"EnableAwsNetworkPerformanceMetricSubscription"
+                   outputClass:[AWSEC2EnableAwsNetworkPerformanceMetricSubscriptionResult class]];
+}
+
+- (void)enableAwsNetworkPerformanceMetricSubscription:(AWSEC2EnableAwsNetworkPerformanceMetricSubscriptionRequest *)request
+     completionHandler:(void (^)(AWSEC2EnableAwsNetworkPerformanceMetricSubscriptionResult *response, NSError *error))completionHandler {
+    [[self enableAwsNetworkPerformanceMetricSubscription:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2EnableAwsNetworkPerformanceMetricSubscriptionResult *> * _Nonnull task) {
+        AWSEC2EnableAwsNetworkPerformanceMetricSubscriptionResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSEC2EnableEbsEncryptionByDefaultResult *> *)enableEbsEncryptionByDefault:(AWSEC2EnableEbsEncryptionByDefaultRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -8760,6 +9381,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2EnableIpamOrganizationAdminAccountResult *response, NSError *error))completionHandler {
     [[self enableIpamOrganizationAdminAccount:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2EnableIpamOrganizationAdminAccountResult *> * _Nonnull task) {
         AWSEC2EnableIpamOrganizationAdminAccountResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2EnableReachabilityAnalyzerOrganizationSharingResult *> *)enableReachabilityAnalyzerOrganizationSharing:(AWSEC2EnableReachabilityAnalyzerOrganizationSharingRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"EnableReachabilityAnalyzerOrganizationSharing"
+                   outputClass:[AWSEC2EnableReachabilityAnalyzerOrganizationSharingResult class]];
+}
+
+- (void)enableReachabilityAnalyzerOrganizationSharing:(AWSEC2EnableReachabilityAnalyzerOrganizationSharingRequest *)request
+     completionHandler:(void (^)(AWSEC2EnableReachabilityAnalyzerOrganizationSharingResult *response, NSError *error))completionHandler {
+    [[self enableReachabilityAnalyzerOrganizationSharing:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2EnableReachabilityAnalyzerOrganizationSharingResult *> * _Nonnull task) {
+        AWSEC2EnableReachabilityAnalyzerOrganizationSharingResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -9034,6 +9678,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2GetAssociatedIpv6PoolCidrsResult *response, NSError *error))completionHandler {
     [[self getAssociatedIpv6PoolCidrs:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetAssociatedIpv6PoolCidrsResult *> * _Nonnull task) {
         AWSEC2GetAssociatedIpv6PoolCidrsResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2GetAwsNetworkPerformanceDataResult *> *)getAwsNetworkPerformanceData:(AWSEC2GetAwsNetworkPerformanceDataRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"GetAwsNetworkPerformanceData"
+                   outputClass:[AWSEC2GetAwsNetworkPerformanceDataResult class]];
+}
+
+- (void)getAwsNetworkPerformanceData:(AWSEC2GetAwsNetworkPerformanceDataRequest *)request
+     completionHandler:(void (^)(AWSEC2GetAwsNetworkPerformanceDataResult *response, NSError *error))completionHandler {
+    [[self getAwsNetworkPerformanceData:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetAwsNetworkPerformanceDataResult *> * _Nonnull task) {
+        AWSEC2GetAwsNetworkPerformanceDataResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -9333,6 +10000,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2GetIpamAddressHistoryResult *response, NSError *error))completionHandler {
     [[self getIpamAddressHistory:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetIpamAddressHistoryResult *> * _Nonnull task) {
         AWSEC2GetIpamAddressHistoryResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2GetIpamDiscoveredAccountsResult *> *)getIpamDiscoveredAccounts:(AWSEC2GetIpamDiscoveredAccountsRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"GetIpamDiscoveredAccounts"
+                   outputClass:[AWSEC2GetIpamDiscoveredAccountsResult class]];
+}
+
+- (void)getIpamDiscoveredAccounts:(AWSEC2GetIpamDiscoveredAccountsRequest *)request
+     completionHandler:(void (^)(AWSEC2GetIpamDiscoveredAccountsResult *response, NSError *error))completionHandler {
+    [[self getIpamDiscoveredAccounts:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetIpamDiscoveredAccountsResult *> * _Nonnull task) {
+        AWSEC2GetIpamDiscoveredAccountsResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2GetIpamDiscoveredResourceCidrsResult *> *)getIpamDiscoveredResourceCidrs:(AWSEC2GetIpamDiscoveredResourceCidrsRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"GetIpamDiscoveredResourceCidrs"
+                   outputClass:[AWSEC2GetIpamDiscoveredResourceCidrsResult class]];
+}
+
+- (void)getIpamDiscoveredResourceCidrs:(AWSEC2GetIpamDiscoveredResourceCidrsRequest *)request
+     completionHandler:(void (^)(AWSEC2GetIpamDiscoveredResourceCidrsResult *response, NSError *error))completionHandler {
+    [[self getIpamDiscoveredResourceCidrs:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetIpamDiscoveredResourceCidrsResult *> * _Nonnull task) {
+        AWSEC2GetIpamDiscoveredResourceCidrsResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -9793,6 +10506,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2GetTransitGatewayRouteTablePropagationsResult *response, NSError *error))completionHandler {
     [[self getTransitGatewayRouteTablePropagations:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetTransitGatewayRouteTablePropagationsResult *> * _Nonnull task) {
         AWSEC2GetTransitGatewayRouteTablePropagationsResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2GetVerifiedAccessEndpointPolicyResult *> *)getVerifiedAccessEndpointPolicy:(AWSEC2GetVerifiedAccessEndpointPolicyRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"GetVerifiedAccessEndpointPolicy"
+                   outputClass:[AWSEC2GetVerifiedAccessEndpointPolicyResult class]];
+}
+
+- (void)getVerifiedAccessEndpointPolicy:(AWSEC2GetVerifiedAccessEndpointPolicyRequest *)request
+     completionHandler:(void (^)(AWSEC2GetVerifiedAccessEndpointPolicyResult *response, NSError *error))completionHandler {
+    [[self getVerifiedAccessEndpointPolicy:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetVerifiedAccessEndpointPolicyResult *> * _Nonnull task) {
+        AWSEC2GetVerifiedAccessEndpointPolicyResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2GetVerifiedAccessGroupPolicyResult *> *)getVerifiedAccessGroupPolicy:(AWSEC2GetVerifiedAccessGroupPolicyRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"GetVerifiedAccessGroupPolicy"
+                   outputClass:[AWSEC2GetVerifiedAccessGroupPolicyResult class]];
+}
+
+- (void)getVerifiedAccessGroupPolicy:(AWSEC2GetVerifiedAccessGroupPolicyRequest *)request
+     completionHandler:(void (^)(AWSEC2GetVerifiedAccessGroupPolicyResult *response, NSError *error))completionHandler {
+    [[self getVerifiedAccessGroupPolicy:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2GetVerifiedAccessGroupPolicyResult *> * _Nonnull task) {
+        AWSEC2GetVerifiedAccessGroupPolicyResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -10581,6 +11340,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     }];
 }
 
+- (AWSTask<AWSEC2ModifyIpamResourceDiscoveryResult *> *)modifyIpamResourceDiscovery:(AWSEC2ModifyIpamResourceDiscoveryRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyIpamResourceDiscovery"
+                   outputClass:[AWSEC2ModifyIpamResourceDiscoveryResult class]];
+}
+
+- (void)modifyIpamResourceDiscovery:(AWSEC2ModifyIpamResourceDiscoveryRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyIpamResourceDiscoveryResult *response, NSError *error))completionHandler {
+    [[self modifyIpamResourceDiscovery:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyIpamResourceDiscoveryResult *> * _Nonnull task) {
+        AWSEC2ModifyIpamResourceDiscoveryResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask<AWSEC2ModifyIpamScopeResult *> *)modifyIpamScope:(AWSEC2ModifyIpamScopeRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -10982,6 +11764,167 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSEC2ModifyTransitGatewayVpcAttachmentResult *response, NSError *error))completionHandler {
     [[self modifyTransitGatewayVpcAttachment:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyTransitGatewayVpcAttachmentResult *> * _Nonnull task) {
         AWSEC2ModifyTransitGatewayVpcAttachmentResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2ModifyVerifiedAccessEndpointResult *> *)modifyVerifiedAccessEndpoint:(AWSEC2ModifyVerifiedAccessEndpointRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyVerifiedAccessEndpoint"
+                   outputClass:[AWSEC2ModifyVerifiedAccessEndpointResult class]];
+}
+
+- (void)modifyVerifiedAccessEndpoint:(AWSEC2ModifyVerifiedAccessEndpointRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyVerifiedAccessEndpointResult *response, NSError *error))completionHandler {
+    [[self modifyVerifiedAccessEndpoint:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyVerifiedAccessEndpointResult *> * _Nonnull task) {
+        AWSEC2ModifyVerifiedAccessEndpointResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2ModifyVerifiedAccessEndpointPolicyResult *> *)modifyVerifiedAccessEndpointPolicy:(AWSEC2ModifyVerifiedAccessEndpointPolicyRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyVerifiedAccessEndpointPolicy"
+                   outputClass:[AWSEC2ModifyVerifiedAccessEndpointPolicyResult class]];
+}
+
+- (void)modifyVerifiedAccessEndpointPolicy:(AWSEC2ModifyVerifiedAccessEndpointPolicyRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyVerifiedAccessEndpointPolicyResult *response, NSError *error))completionHandler {
+    [[self modifyVerifiedAccessEndpointPolicy:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyVerifiedAccessEndpointPolicyResult *> * _Nonnull task) {
+        AWSEC2ModifyVerifiedAccessEndpointPolicyResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2ModifyVerifiedAccessGroupResult *> *)modifyVerifiedAccessGroup:(AWSEC2ModifyVerifiedAccessGroupRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyVerifiedAccessGroup"
+                   outputClass:[AWSEC2ModifyVerifiedAccessGroupResult class]];
+}
+
+- (void)modifyVerifiedAccessGroup:(AWSEC2ModifyVerifiedAccessGroupRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyVerifiedAccessGroupResult *response, NSError *error))completionHandler {
+    [[self modifyVerifiedAccessGroup:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyVerifiedAccessGroupResult *> * _Nonnull task) {
+        AWSEC2ModifyVerifiedAccessGroupResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2ModifyVerifiedAccessGroupPolicyResult *> *)modifyVerifiedAccessGroupPolicy:(AWSEC2ModifyVerifiedAccessGroupPolicyRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyVerifiedAccessGroupPolicy"
+                   outputClass:[AWSEC2ModifyVerifiedAccessGroupPolicyResult class]];
+}
+
+- (void)modifyVerifiedAccessGroupPolicy:(AWSEC2ModifyVerifiedAccessGroupPolicyRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyVerifiedAccessGroupPolicyResult *response, NSError *error))completionHandler {
+    [[self modifyVerifiedAccessGroupPolicy:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyVerifiedAccessGroupPolicyResult *> * _Nonnull task) {
+        AWSEC2ModifyVerifiedAccessGroupPolicyResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2ModifyVerifiedAccessInstanceResult *> *)modifyVerifiedAccessInstance:(AWSEC2ModifyVerifiedAccessInstanceRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyVerifiedAccessInstance"
+                   outputClass:[AWSEC2ModifyVerifiedAccessInstanceResult class]];
+}
+
+- (void)modifyVerifiedAccessInstance:(AWSEC2ModifyVerifiedAccessInstanceRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyVerifiedAccessInstanceResult *response, NSError *error))completionHandler {
+    [[self modifyVerifiedAccessInstance:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyVerifiedAccessInstanceResult *> * _Nonnull task) {
+        AWSEC2ModifyVerifiedAccessInstanceResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2ModifyVerifiedAccessInstanceLoggingConfigurationResult *> *)modifyVerifiedAccessInstanceLoggingConfiguration:(AWSEC2ModifyVerifiedAccessInstanceLoggingConfigurationRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyVerifiedAccessInstanceLoggingConfiguration"
+                   outputClass:[AWSEC2ModifyVerifiedAccessInstanceLoggingConfigurationResult class]];
+}
+
+- (void)modifyVerifiedAccessInstanceLoggingConfiguration:(AWSEC2ModifyVerifiedAccessInstanceLoggingConfigurationRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyVerifiedAccessInstanceLoggingConfigurationResult *response, NSError *error))completionHandler {
+    [[self modifyVerifiedAccessInstanceLoggingConfiguration:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyVerifiedAccessInstanceLoggingConfigurationResult *> * _Nonnull task) {
+        AWSEC2ModifyVerifiedAccessInstanceLoggingConfigurationResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2ModifyVerifiedAccessTrustProviderResult *> *)modifyVerifiedAccessTrustProvider:(AWSEC2ModifyVerifiedAccessTrustProviderRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"ModifyVerifiedAccessTrustProvider"
+                   outputClass:[AWSEC2ModifyVerifiedAccessTrustProviderResult class]];
+}
+
+- (void)modifyVerifiedAccessTrustProvider:(AWSEC2ModifyVerifiedAccessTrustProviderRequest *)request
+     completionHandler:(void (^)(AWSEC2ModifyVerifiedAccessTrustProviderResult *response, NSError *error))completionHandler {
+    [[self modifyVerifiedAccessTrustProvider:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2ModifyVerifiedAccessTrustProviderResult *> * _Nonnull task) {
+        AWSEC2ModifyVerifiedAccessTrustProviderResult *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
@@ -12698,6 +13641,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
         if (completionHandler) {
             completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSEC2UnassignPrivateNatGatewayAddressResult *> *)unassignPrivateNatGatewayAddress:(AWSEC2UnassignPrivateNatGatewayAddressRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodPOST
+                     URLString:@""
+                  targetPrefix:@""
+                 operationName:@"UnassignPrivateNatGatewayAddress"
+                   outputClass:[AWSEC2UnassignPrivateNatGatewayAddressResult class]];
+}
+
+- (void)unassignPrivateNatGatewayAddress:(AWSEC2UnassignPrivateNatGatewayAddressRequest *)request
+     completionHandler:(void (^)(AWSEC2UnassignPrivateNatGatewayAddressResult *response, NSError *error))completionHandler {
+    [[self unassignPrivateNatGatewayAddress:request] continueWithBlock:^id _Nullable(AWSTask<AWSEC2UnassignPrivateNatGatewayAddressResult *> * _Nonnull task) {
+        AWSEC2UnassignPrivateNatGatewayAddressResult *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
         }
 
         return nil;

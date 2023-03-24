@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 #import "AWSIoTResources.h"
 
 static NSString *const AWSInfoIoT = @"IoT";
-NSString *const AWSIoTSDKVersion = @"2.28.5";
+NSString *const AWSIoTSDKVersion = @"2.30.4";
 
 
 @interface AWSIoTResponseSerializer : AWSJSONResponseSerializer
@@ -4095,6 +4095,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
      completionHandler:(void (^)(AWSIoTListProvisioningTemplatesResponse *response, NSError *error))completionHandler {
     [[self listProvisioningTemplates:request] continueWithBlock:^id _Nullable(AWSTask<AWSIoTListProvisioningTemplatesResponse *> * _Nonnull task) {
         AWSIoTListProvisioningTemplatesResponse *result = task.result;
+        NSError *error = task.error;
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSIoTListRelatedResourcesForAuditFindingResponse *> *)listRelatedResourcesForAuditFinding:(AWSIoTListRelatedResourcesForAuditFindingRequest *)request {
+    return [self invokeRequest:request
+                    HTTPMethod:AWSHTTPMethodGET
+                     URLString:@"/audit/relatedResources"
+                  targetPrefix:@""
+                 operationName:@"ListRelatedResourcesForAuditFinding"
+                   outputClass:[AWSIoTListRelatedResourcesForAuditFindingResponse class]];
+}
+
+- (void)listRelatedResourcesForAuditFinding:(AWSIoTListRelatedResourcesForAuditFindingRequest *)request
+     completionHandler:(void (^)(AWSIoTListRelatedResourcesForAuditFindingResponse *response, NSError *error))completionHandler {
+    [[self listRelatedResourcesForAuditFinding:request] continueWithBlock:^id _Nullable(AWSTask<AWSIoTListRelatedResourcesForAuditFindingResponse *> * _Nonnull task) {
+        AWSIoTListRelatedResourcesForAuditFindingResponse *result = task.result;
         NSError *error = task.error;
 
         if (completionHandler) {
